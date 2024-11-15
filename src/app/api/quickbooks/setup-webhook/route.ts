@@ -33,7 +33,7 @@ export async function POST(request: Request) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        webhookUrl: `${process.env.BASE_URL}/api/quickbooks/webhook`,
+        webhookUrl: `${process.env.NEXT_BASE_URL}/api/quickbooks/webhook`,
         entities: [{ type: 'Invoice' }],
         eventTypes: ['Create', 'Update', 'Delete']
       })

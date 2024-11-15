@@ -10,9 +10,9 @@ interface TokenResponse {
 }
 
 export class TokenService {
-  private static readonly REALM_ID = process.env.QUICKBOOKS_REALM_ID!;
-  private static readonly CLIENT_ID = process.env.QUICKBOOKS_CLIENT_ID!;
-  private static readonly CLIENT_SECRET = process.env.QUICKBOOKS_CLIENT_SECRET!;
+  private static readonly REALM_ID = process.env.NEXT_QUICKBOOKS_REALM_ID!;
+  private static readonly CLIENT_ID = process.env.NEXT_QUICKBOOKS_CLIENT_ID!;
+  private static readonly CLIENT_SECRET = process.env.NEXT_QUICKBOOKS_CLIENT_SECRET!;
 
   static async getValidToken(): Promise<string> {
     await connectDB();
