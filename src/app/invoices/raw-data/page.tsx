@@ -281,7 +281,7 @@ export default function InvoiceDetailsPage() {
       const fn = `invoices_${filename}`;
       
       // Download the excel file
-      await downloadExcel(processedData, fn);
+      await downloadExcel(processedData, items, fn);
       message.success('Excel file downloaded successfully');
     } catch (error) {
       console.error('Download error:', error);

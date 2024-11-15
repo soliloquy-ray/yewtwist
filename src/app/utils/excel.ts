@@ -10,11 +10,6 @@ interface ProcessedInvoice {
   [key: string]: any; // For dynamic item columns
 }
 
-interface ItemQuantityPrice {
-  qty: number;
-  price: number;
-}
-
 export const processInvoicesForExcel = (invoices: Invoice[], items: Item[]) => {
   const itemMap = new Map(items.map(item => [item.Id, item]));
   const processedData: ProcessedInvoice[] = [];
@@ -23,17 +18,26 @@ export const processInvoicesForExcel = (invoices: Invoice[], items: Item[]) => {
     const processedInvoice: ProcessedInvoice = {
       DocNumber: invoice.DocNumber,
       TxnDate: invoice.TxnDate,
+      ShipDate: invoice.ShipDate,
+      DueDate: invoice.DueDate,
       CustomerName: invoice.CustomerRef.name,
+      Billing_Address: Object.values(invoice?.BillAddr ?? {}).slice(1).join(", \r\n"),
+      Shipping_Address: Object.values(invoice?.ShipAddr ?? {}).slice(1).join(", \r\n"),
+      Shipper: invoice.ShipMethodRef?.name,
+      Customer_Number: invoice.CustomField?.filter((field) => field.Name === "Contact Number")[0]?.StringValue,
+      Customer_PO_Number: invoice.CustomField?.filter((field) => field.Name === "Customer PO Number")[0]?.StringValue,
+      Customer_Memo: invoice.CustomerMemo?.value,
+      Private_Note: invoice.PrivateNote,
+      Billing_Email: invoice.BillEmail?.Address,
       TotalAmt: invoice.TotalAmt,
       Balance: invoice.Balance,
+
     };
 
     // Initialize quantities and prices for each item
     items.forEach(item => {
-      processedInvoice[item.Name] = {
-        qty: 0,
-        price: 0
-      };
+      processedInvoice[`${item.Name}_qty`] = 0;
+      processedInvoice[`${item.Name}_price`] = 0;
     });
 
     // Process line items
@@ -42,24 +46,30 @@ export const processInvoicesForExcel = (invoices: Invoice[], items: Item[]) => {
         const itemId = lineItem.SalesItemLineDetail.ItemRef.value;
         const item = itemMap.get(itemId);
         if (item) {
-          const existingValue = processedInvoice[item.Name] as ItemQuantityPrice;
-          processedInvoice[item.Name] = {
-            qty: existingValue.qty + lineItem.SalesItemLineDetail.Qty,
-            price: lineItem.SalesItemLineDetail.UnitPrice || lineItem.Amount || 0
-          };
+          processedInvoice[`${item.Name}_qty`] = (processedInvoice[`${item.Name}_qty`] || 0) + lineItem.SalesItemLineDetail.Qty;
+          processedInvoice[`${item.Name}_price`] = 
+            lineItem.SalesItemLineDetail.UnitPrice || lineItem.Amount || 0;
         }
       } else if (lineItem.DetailType === 'GroupLineDetail' && lineItem.GroupLineDetail) {
-        // Process group items
+        const groupItemId = lineItem.GroupLineDetail.GroupItemRef.value;
+        const groupItem = itemMap.get(groupItemId);
+        if (groupItem) {
+          processedInvoice[`${groupItem.Name}_qty`] = (processedInvoice[`${groupItem.Name}_qty`] || 0) + lineItem.GroupLineDetail.Quantity;
+          if (lineItem.Amount) {
+            processedInvoice[`${groupItem.Name}_price`] = 
+              lineItem.Amount;
+          }
+        }
+
+        // Process individual items within the group
         lineItem.GroupLineDetail.Line.forEach(groupLine => {
           if (groupLine.SalesItemLineDetail) {
             const subItemId = groupLine.SalesItemLineDetail.ItemRef.value;
             const subItem = itemMap.get(subItemId);
             if (subItem) {
-              const existingValue = processedInvoice[subItem.Name] as ItemQuantityPrice;
-              processedInvoice[subItem.Name] = {
-                qty: existingValue.qty + groupLine.SalesItemLineDetail.Qty,
-                price: groupLine.SalesItemLineDetail.UnitPrice || 0
-              };
+              processedInvoice[`${subItem.Name}_qty`] = (processedInvoice[`${subItem.Name}_qty`] || 0) + groupLine.SalesItemLineDetail.Qty;
+              processedInvoice[`${subItem.Name}_price`] = 
+                groupLine.SalesItemLineDetail.UnitPrice || 0;
             }
           }
         });
@@ -72,80 +82,121 @@ export const processInvoicesForExcel = (invoices: Invoice[], items: Item[]) => {
   return processedData;
 };
 
-export const downloadExcel = async (data: ProcessedInvoice[], filename: string) => {
+export const downloadExcel = async (data: ProcessedInvoice[], items: Item[], filename: string) => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Invoices');
 
-  // Get base headers
-  const baseHeaders = ['DocNumber', 'TxnDate', 'CustomerName', 'TotalAmt', 'Balance'];
-  
-  // Set up columns with separate Qty and Price for each item
-  const columns = baseHeaders.map(header => ({
-    header,
-    key: header,
-    width: 15
-  }));
-
-  // Add item columns (both Qty and Price)
-  Object.keys(data[0]).forEach(key => {
-    if (!baseHeaders.includes(key)) {
-      columns.push(
-        {
-          header: `${key} Qty`,
-          key: `${key}_qty`,
-          width: 15,
-        },
-        {
-          header: `${key} Price`,
-          key: `${key}_price`,
-          width: 15,
+  // Create headers
+  const baseColumns = ['DocNumber', 'TxnDate', 'ShipDate', 'DueDate', 'CustomerName', 'Billing_Address', 'Shipping_Address', 'Shipper', 'Customer_Number', 'Customer_PO_Number', 'Customer_Memo', 'Private_Note', 'Billing_Email', 'TotalAmt', 'Balance'];
+  const itemColumns = items.flatMap(item => [
+    { 
+      header: `${item.Name} Qty`,
+      key: `${item.Name}_qty`,
+      width: 12,
+      style: {
+        fill: {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFE6E6FA' }  // Light purple for quantities
         }
-      );
+      }
+    },
+    { 
+      header: `${item.Name} Price`,
+      key: `${item.Name}_price`,
+      width: 15,
+      style: {
+        fill: {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFE6FFE6' }  // Light green for prices
+        }
+      }
     }
-  });
+  ]);
 
-  worksheet.columns = columns;
+  worksheet.columns = [
+    ...baseColumns.map(header => ({ header, key: header, width: 15 })),
+    ...itemColumns
+  ];
 
-  // Add data with separate columns
-  const rows = data.map(invoice => {
-    const row: any = { ...invoice };
-    Object.keys(invoice).forEach(key => {
-      if (!baseHeaders.includes(key)) {
-        const value = invoice[key] as ItemQuantityPrice;
-        row[`${key}_qty`] = value.qty;
-        row[`${key}_price`] = value.price;
-        delete row[key]; // Remove the original combined value
+  // Add data rows
+  worksheet.addRows(data);
+
+  // Style headers
+  const headerRow = worksheet.getRow(1);
+  headerRow.font = { bold: true };
+  headerRow.height = 20;
+
+  // Format numbers and apply conditional formatting
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return; // Skip header row
+
+    row.eachCell((cell, colNumber) => {
+      const columnKey = worksheet.columns[colNumber - 1].key as string;
+      
+      if (columnKey?.includes('_price')) {
+        // Price columns
+        cell.numFmt = '"$"#,##0.00';
+        if (cell.value && cell.value !== 0) {
+          cell.font = { bold: true };
+        } else {
+          cell.font= { color: {argb: '888888'} };
+        }
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFE6FFE6' }  // Light green
+        };
+      } 
+      else if (columnKey?.includes('_qty')) {
+        // Quantity columns
+        cell.numFmt = '#,##0';
+        if (cell.value && cell.value !== 0) {
+          cell.font = { bold: true };
+        } else {
+          cell.font= { color: {argb: '888888'} };
+        }
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFE6E6FA' }  // Light purple
+        };
+      }
+      else if (columnKey === 'TotalAmt' || columnKey === 'Balance') {
+        // Format monetary values
+        cell.numFmt = '"$"#,##0.00';
+        if (cell.value && cell.value !== 0) {
+          cell.font = { bold: true };
+        }
       }
     });
-    return row;
   });
 
-  worksheet.addRows(rows);
-
-  // Format number columns
-  worksheet.columns.forEach(column => {
-    if (column.key?.includes('_qty')) {
-      column.numFmt = '#,##0';
-    } else if (column.key?.includes('_price')) {
-      column.numFmt = '$#,##0.00';
-    }
+  // Add borders to all cells
+  worksheet.eachRow((row) => {
+    row.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
+      };
+    });
   });
 
-  // Format date columns
-  if (worksheet.getColumn('TxnDate')) {
-    worksheet.getColumn('TxnDate').numFmt = 'yyyy-mm-dd';
-  }
+  // Freeze the header row
+  worksheet.views = [
+    { state: 'frozen', xSplit: 0, ySplit: 1 }
+  ];
 
   // Auto-filter
   worksheet.autoFilter = {
     from: { row: 1, column: 1 },
-    to: { row: 1, column: baseHeaders.length }
+    to: { row: 1, column: worksheet.columns.length }
   };
 
-  // Generate buffer
   const buffer = await workbook.xlsx.writeBuffer();
-
-  // Create blob and download
   const blob = new Blob([buffer], { 
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
   });
