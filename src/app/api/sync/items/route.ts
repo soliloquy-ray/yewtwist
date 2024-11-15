@@ -7,7 +7,7 @@ export async function GET() {
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to sync items' },
+      { error },
       { status: 500 }
     );
   }

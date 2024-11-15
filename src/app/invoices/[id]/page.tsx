@@ -61,8 +61,6 @@ export default function InvoiceView() {
   const params = useParams();
   const id = params.id as string;
   const [invoice, setInvoice] = useState<Invoice | null>(null);
-  const [totalQty, setTotalQty] = useState(0);
-  const [totalAmount, setTotalAmount] = useState(0);
 
   useEffect(() => {
     if (id) {
@@ -77,10 +75,6 @@ export default function InvoiceView() {
     console.log({results, id});
     setInvoice(results.invoices[0] || []);
   }
-
-  useEffect(() => {
-    console.log({totalAmount, totalQty});
-  }, [totalAmount, totalQty])
 
   const handlePrint = () => {
     window.print();
@@ -130,7 +124,7 @@ export default function InvoiceView() {
               Canada
             </td>
             <td colSpan={2}>
-              {Object.values(invoice?.BillAddr ?? {}).filter((bData) => bData !== "").map((billData) => <p>{billData}</p>)}
+              {Object.values(invoice?.BillAddr ?? {}).filter((bData) => bData !== "").map((billData, index) => <p key={index}>{billData}</p>)}
               {invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue} 
              {/*  {invoice?.CustomerRef?.name}<br />
               {invoice?.BillAddr?.Line1 !== invoice.CustomerRef.name && invoice.BillAddr?.Line1 && <span>{invoice?.BillAddr?.Line1}<br/></span>}
@@ -156,7 +150,7 @@ export default function InvoiceView() {
             <td>Canada</td>
             <td>Canada</td>
             <td colSpan={2} rowSpan={3}>
-              {Object.values(invoice?.ShipAddr ?? {}).filter((sData) => sData !== "").map((shipData) => <p>{shipData}</p>)}
+              {Object.values(invoice?.ShipAddr ?? {}).filter((sData) => sData !== "").map((shipData, index) => <p key={index}>{shipData}</p>)}
               {invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue}
             {/* {invoice?.CustomerRef?.name}<br />
               {invoice?.ShipAddr?.Line1 !== invoice.CustomerRef.name && invoice.ShipAddr?.Line1 && <span>{invoice?.ShipAddr?.Line1}<br/></span>}

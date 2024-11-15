@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ExcelJS from 'exceljs';
 
 interface ProcessedInvoice {
@@ -78,35 +79,42 @@ export const downloadExcel = async (data: ProcessedInvoice[], filename: string) 
   // Get base headers
   const baseHeaders = ['DocNumber', 'TxnDate', 'CustomerName', 'TotalAmt', 'Balance'];
   
-  // Set up columns
+  // Set up columns with separate Qty and Price for each item
   const columns = baseHeaders.map(header => ({
     header,
     key: header,
     width: 15
   }));
 
-  // Add item columns
+  // Add item columns (both Qty and Price)
   Object.keys(data[0]).forEach(key => {
     if (!baseHeaders.includes(key)) {
-      columns.push({
-        header: key,
-        key,
-        width: 20,
-      });
+      columns.push(
+        {
+          header: `${key} Qty`,
+          key: `${key}_qty`,
+          width: 15,
+        },
+        {
+          header: `${key} Price`,
+          key: `${key}_price`,
+          width: 15,
+        }
+      );
     }
   });
 
   worksheet.columns = columns;
 
-  // Add data with formatted item cells
+  // Add data with separate columns
   const rows = data.map(invoice => {
     const row: any = { ...invoice };
     Object.keys(invoice).forEach(key => {
       if (!baseHeaders.includes(key)) {
         const value = invoice[key] as ItemQuantityPrice;
-        row[key] = value.qty > 0 ? 
-          `${value.qty} pcs @ $${value.price.toFixed(2)}` : 
-          '';
+        row[`${key}_qty`] = value.qty;
+        row[`${key}_price`] = value.price;
+        delete row[key]; // Remove the original combined value
       }
     });
     return row;
@@ -114,22 +122,12 @@ export const downloadExcel = async (data: ProcessedInvoice[], filename: string) 
 
   worksheet.addRows(rows);
 
-  // Style headers
-  worksheet.getRow(1).font = { bold: true };
-  worksheet.getRow(1).fill = {
-    type: 'pattern',
-    pattern: 'solid',
-    fgColor: { argb: 'FFE0E0E0' }
-  };
-
-
-  // Add data
-  // worksheet.addRows(data);
-
   // Format number columns
   worksheet.columns.forEach(column => {
-    if (column.values && column.values[1] && typeof column.values[1] === 'number') {
-      column.numFmt = '#,##0.00';
+    if (column.key?.includes('_qty')) {
+      column.numFmt = '#,##0';
+    } else if (column.key?.includes('_price')) {
+      column.numFmt = '$#,##0.00';
     }
   });
 

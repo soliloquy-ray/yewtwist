@@ -2,7 +2,6 @@
 // components/Navigation.tsx
 import { Layout, Menu, message } from 'antd';
 import { 
-  HomeOutlined, 
   FileTextOutlined, 
   ShoppingOutlined,
   SyncOutlined, 

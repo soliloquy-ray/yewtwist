@@ -11,7 +11,6 @@ import {
   Space, 
   Collapse, 
   Tag, 
-  Spin,
   message 
 } from 'antd';
 import { DownloadOutlined, SearchOutlined } from '@ant-design/icons';
@@ -65,7 +64,7 @@ const InvoicesPage = () => {
       console.log({results});
       return results?.[0]?.Id;
     } catch (error) {
-      message.error('Customer search failed');
+      message.error(JSON.stringify(error));
       return null;
     }
   };
@@ -74,11 +73,12 @@ const InvoicesPage = () => {
     setLoading(true);
     const cId = await handleCustomerSearch();
     try {
-      let baseFilters: any = {
+      const baseFilters = {
         startDate: filters.startDate,
         endDate: filters.endDate,
         page,
-        limit: pageSize
+        limit: pageSize,
+        customerId: ''
       };
       if (cId !== null) {
         baseFilters.customerId = cId;
@@ -91,7 +91,7 @@ const InvoicesPage = () => {
       }));
       message.success(`Found ${results.pagination.total} invoices`);
     } catch (error) {
-      message.error('Failed to fetch invoices');
+      message.error(JSON.stringify(error));
     } finally {
       setLoading(false);
     }

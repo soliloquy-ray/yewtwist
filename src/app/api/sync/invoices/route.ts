@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to sync invoices' },
+      { error },
       { status: 500 }
     );
   }

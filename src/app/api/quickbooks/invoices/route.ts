@@ -26,7 +26,7 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to fetch invoices' },
+      { error },
       { status: 500 }
     );
   }

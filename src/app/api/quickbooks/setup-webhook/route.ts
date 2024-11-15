@@ -17,6 +17,7 @@ export async function POST(request: Request) {
       })
     });
     
+    console.log({ request });
     const tokenData = await tokenResponse.json();
     console.log('Token Response:', {
       status: tokenResponse.status,
@@ -41,6 +42,6 @@ export async function POST(request: Request) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to set up webhook' }, { status: 500 });
+    return NextResponse.json({ error }, { status: 500 });
   }
 }

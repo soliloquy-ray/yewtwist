@@ -2,7 +2,7 @@ import { Invoice } from "@/app/models/Invoice";
 import { connectDB } from "@/lib/mongodb";
 
 // In your webhook handler or sync function
-async function POST(invoiceData: Invoice) {
+export async function POST(invoiceData: Invoice) {
   try {
     await connectDB();
     await Invoice.findOneAndUpdate(

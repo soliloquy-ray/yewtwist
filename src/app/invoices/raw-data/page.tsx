@@ -6,8 +6,7 @@ import { Table, Space, Button, DatePicker, Input, Card, message, Collapse, Row }
 import type { ColumnsType } from 'antd/es/table';
 import { DownloadOutlined, SearchOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import { useRouter } from 'next/navigation';
-import { fetchInvoices, searchCustomers } from '@/lib/quickbooks-api';
+import { fetchInvoices, /* searchCustomers */ } from '@/lib/quickbooks-api';
 import PageWithNav from '@/app/components/PageWithNav';
 import { downloadExcel, processInvoicesForExcel } from '@/app/utils/excel';
 import dayjs from 'dayjs';
@@ -32,7 +31,6 @@ const LineItem = styled.div`
 `;
 
 export default function InvoiceDetailsPage() {
-  const router = useRouter();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
@@ -45,7 +43,7 @@ export default function InvoiceDetailsPage() {
     pageSize: 10,
     total: 0
   });
-
+/* 
   const handleCustomerSearch = async (): Promise<string|null> => {
     if (filters.customerSearch === '')  {
       return null
@@ -58,17 +56,18 @@ export default function InvoiceDetailsPage() {
       message.error('Customer search failed');
       return null;
     }
-  };
+  }; */
 
   const handleSearch = async (page = pagination.current, pageSize = pagination.pageSize) => {
     setLoading(true);
     // const cId = await handleCustomerSearch();
     try {
-      let baseFilters: any = {
+      const baseFilters = {
         startDate: filters.startDate,
         endDate: filters.endDate,
         page,
-        limit: pageSize
+        limit: pageSize,
+        customerRef: ''
       };
       if (filters.customerSearch) {
         baseFilters.customerRef = filters.customerSearch;
@@ -81,7 +80,7 @@ export default function InvoiceDetailsPage() {
       }));
       message.success(`Found ${results.pagination.total} invoices`);
     } catch (error) {
-      message.error('Failed to fetch invoices');
+      message.error(JSON.stringify(error));
     } finally {
       setLoading(false);
     }
@@ -165,7 +164,7 @@ export default function InvoiceDetailsPage() {
       width: 300,
       render: (addr: {[key:string]: string}) => addr ? (
         <>
-          {Object.values(addr).map((addrData) => <p>{addrData}</p>)}
+          {Object.values(addr).map((addrData, index) => <p key={index}>{addrData}</p>)}
         </>
       ) : '-',
     },
@@ -176,7 +175,7 @@ export default function InvoiceDetailsPage() {
       width: 300,
       render: (addr: {[key: string]: string}) => addr ? (
         <>
-          {Object.values(addr).map((addrData) => <p>{addrData}</p>)}
+          {Object.values(addr).map((addrData, index) => <p key={index}>{addrData}</p>)}
         </>
       ) : '-',
     },
@@ -191,6 +190,7 @@ export default function InvoiceDetailsPage() {
       dataIndex: 'CustomField',
       key: 'customFields',
       width: 200,
+      // eslint-disable-next-line
       render: (fields) => fields?.map((field: any) => (
         <div key={field.Name}>
           {field.Name}: {field.StringValue}
@@ -278,7 +278,6 @@ export default function InvoiceDetailsPage() {
       const processedData = processInvoicesForExcel(invoiceList, items);
       
       // Generate filename with current date
-      const date = new Date().toISOString().split('T')[0];
       const fn = `invoices_${filename}`;
       
       // Download the excel file

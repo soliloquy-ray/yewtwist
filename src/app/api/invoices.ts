@@ -18,7 +18,7 @@ export default async function handler(
       }
     );
     res.status(200).json(result);
-  } catch (error: any) {
-    res.status(500).json({ error: 'Failed to fetch invoices' });
+  } catch (error) {
+    res.status(500).json({ error });
   }
 }

@@ -8,20 +8,6 @@ export interface Customer {
   FamilyName?: string;
 }
 
-interface CustomerSearchResult {
-  QueryResponse: {
-    Customer: Customer[];
-  };
-}
-
-interface InvoiceQueryParams {
-  startDate?: string;
-  endDate?: string;
-  customerId?: string;
-  limit?: number;
-  id?: string;
-}
-
 // Function to search customers by name
 export async function searchCustomers(searchTerm: string): Promise<Customer[]> {
   const response = await fetch(`/api/quickbooks/customers?searchTerm=${encodeURIComponent(searchTerm)}`);

@@ -3,7 +3,7 @@ import { TokenService } from './tokenService';
 import { QB_CONFIG } from './config';
 import { Item } from '@/app/models/Item';
 import { Invoice } from '@/app/models/Invoice';
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export class SyncService {
   static async syncItems() {
     try {

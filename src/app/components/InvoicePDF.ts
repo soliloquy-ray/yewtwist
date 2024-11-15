@@ -2,10 +2,6 @@
 
 import { jsPDF } from 'jspdf';
 
-interface PDFGeneratorProps {
-  invoice: Invoice;
-}
-
 export const generateInvoicePDF = (invoice: Invoice) => {
   const doc = new jsPDF({
     orientation: 'portrait',
@@ -100,6 +96,7 @@ export const generateInvoicePDF = (invoice: Invoice) => {
   // Add line items
   let yPos = startY + 15;
   invoice.Line.forEach((item, index) => {
+    console.log({index});
     const itemDescription = item.DetailType === 'GroupLineDetail' ? item.GroupLineDetail?.GroupItemRef?.name :
     item.DetailType === 'DiscountLineDetail' ? item?.DiscountLineDetail?.DiscountAccountRef?.name : 
    item.SalesItemLineDetail?.ItemRef.name;
