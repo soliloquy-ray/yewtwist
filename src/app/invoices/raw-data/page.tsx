@@ -324,7 +324,9 @@ export default function InvoiceDetailsPage() {
           </Button>
         </Space>
       </SearchCard>
-
+          <Row>
+            <Button type='primary' onClick={() => handleDownload(invoices, dayjs().format('MM/DD/YYYY'))}>Download Page</Button>
+          </Row>
       <Table
         columns={columns}
         dataSource={invoices}
@@ -345,10 +347,6 @@ export default function InvoiceDetailsPage() {
             handleSearch(page, pageSize);
           }
         }}
-        footer={() => 
-          <Row>
-            <Button type='primary' onClick={() => handleDownload(invoices, dayjs().format('MM/DD/YYYY'))}>Download Page</Button>
-          </Row>}
       />
     </PageContainer>
     </PageWithNav>
