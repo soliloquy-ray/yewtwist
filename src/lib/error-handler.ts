@@ -1,4 +1,4 @@
-// lib/error-handler.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export class AppError extends Error {
   statusCode: number;
   status: string;
@@ -14,7 +14,7 @@ export class AppError extends Error {
   }
 }
 
-export const handleCastError = (err: Record<string,unknown>) => {
+export const handleCastError = (err: any) => {
   let message = `Invalid ${err.path}: ${err.value}`;
   console.error(JSON.stringify(message));
   if (err.value && typeof err.value === 'object') {
@@ -23,7 +23,7 @@ export const handleCastError = (err: Record<string,unknown>) => {
   return new AppError(message, 400);
 };
 
-export const handleMongooseError = (err: Record<string,unknown>) => {
+export const handleMongooseError = (err: any) => {
   if (err.name === 'CastError') return handleCastError(err);
   if (err.code === 11000) {
     const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];

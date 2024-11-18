@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
 import { Expense } from '@/app/models/Expense';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export async function GET(request: Request) {
   try {
@@ -14,7 +15,7 @@ export async function GET(request: Request) {
     await connectDB();
 
     // Build query
-    const query: Record<string, unknown> = {};
+    const query: any = {};
 
     if (startDate) {
       query.TxnDate = { $gte: startDate };
