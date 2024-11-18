@@ -222,6 +222,24 @@ export default function InvoiceDetailsPage() {
       width: 150,
     },
     {
+      title: 'Shipping Fee',
+      key: 'ShippingFee',
+      width: 100,
+      render: (_, invoice) => {
+        return invoice.Line.filter((lineItem) => lineItem.SalesItemLineDetail?.ItemRef.value === 'SHIPPING_ITEM_ID')?.[0]?.Amount;
+      }
+    },
+    {
+      title: 'Discount',
+      key: 'Discount',
+      width: 100,
+      render: (_, invoice) => {
+        const hasDiscount = invoice.Line.find((lineItem) => lineItem.DetailType === 'DiscountLineDetail');
+        if (hasDiscount) return `${hasDiscount.DiscountLineDetail?.DiscountPercent}%`;
+        else return 'N/A';
+      }
+    },
+    {
       title: 'Line Items',
       key: 'lineItems',
       width: 400,

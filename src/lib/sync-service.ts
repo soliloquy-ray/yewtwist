@@ -3,6 +3,8 @@ import { TokenService } from './tokenService';
 import { QB_CONFIG } from './config';
 import { Item } from '@/app/models/Item';
 import { Invoice } from '@/app/models/Invoice';
+import { Expense } from '@/app/models/Expense';
+import { AppError, handleCastError, handleMongooseError } from './error-handler';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class SyncService {
   static async syncItems() {
@@ -365,6 +367,91 @@ export class SyncService {
     } catch (error) {
       console.error('Query error:', error);
       throw error;
+    }
+  }
+
+  static async syncExpenses(params?: {
+    startDate?: string;
+    endDate?: string;
+  }) {
+    try {
+      await connectDB();
+      const accessToken = await TokenService.getValidToken();
+      
+      let query = 'SELECT * FROM Purchase';
+      const conditions = [];
+      
+      if (params?.startDate) {
+        conditions.push(`TxnDate >= '${params.startDate}'`);
+      }
+      if (params?.endDate) {
+        conditions.push(`TxnDate <= '${params.endDate}'`);
+      }
+      
+      if (conditions.length > 0) {
+        query += ` WHERE ${conditions.join(' AND ')}`;
+      }
+      
+      query += ' MAXRESULTS 1000';
+  
+      const response = await fetch(
+        `${QB_CONFIG.baseUrl}/${QB_CONFIG.realmId}/query?query=${encodeURIComponent(query)}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Accept': 'application/json'
+          }
+        }
+      );
+  
+      if (!response.ok) {
+        throw new AppError('Failed to fetch expenses from QuickBooks', 500);
+      }
+  
+      const data = await response.json();
+      const expenses: Expense[] = data.QueryResponse.Purchase || [];
+      console.log({sample: expenses[0]})
+      const operations = expenses.map(expense => ({
+        updateOne: {
+          filter: { Id: expense.Id },
+          update: {
+            $set: {
+              Id: expense.Id,
+              PaymentType: expense.PaymentType,
+              TxnDate: expense.TxnDate,
+              AccountRef: expense.AccountRef,
+              EntityRef: expense.EntityRef || {}, // Handle potentially missing EntityRef
+              DepartmentRef: expense.DepartmentRef,
+              CurrencyRef: expense.CurrencyRef,
+              TotalAmt: expense.TotalAmt,
+              Line: expense.Line,
+              PaymentMethodRef: expense.PaymentMethodRef,
+              Others: expense.Others,
+              lastSyncedAt: new Date()
+            }
+          },
+          upsert: true
+        }
+      }));
+  
+      try {
+        const result = await Expense.bulkWrite(operations);
+        return {
+          success: true,
+          matched: result.matchedCount,
+          modified: result.modifiedCount,
+          upserted: result.upsertedCount,
+          timestamp: new Date()
+        };
+      } catch (error: any) {
+        if (error.name === 'CastError') {
+          throw handleCastError(error);
+        }
+        throw error;
+      }
+    } catch (error) {
+      console.error('Expense sync error:', error);
+      throw handleMongooseError(error);
     }
   }
 }

@@ -32,14 +32,14 @@ const Navigation = () => {
     //   label: 'Dashboard'
     // },
     {
-      key: '/invoices',
-      icon: <FileTextOutlined />,
-      label: 'Invoices'
-    },
-    {
       key: '/invoices/raw-data',
       icon: <FileTextTwoTone />,
       label: 'Raw Data'
+    },
+    {
+      key: '/expenses',
+      icon: <FileTextOutlined />,
+      label: 'Expenses'
     },
     {
       key: '/products',
@@ -67,9 +67,10 @@ const Navigation = () => {
         items={menuItems}
         onClick={async ({ key }) => {
           if (key !== "/sync") router.push(key);
-          else {            
+          else {
             await fetch('/api/sync/items');
             await fetch('/api/sync/invoices');
+            await fetch('/api/sync/expenses');
             message.info('Data synced!');
           }
         }}

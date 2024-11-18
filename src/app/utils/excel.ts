@@ -32,6 +32,8 @@ export const processInvoicesForExcel = (invoices: Invoice[], items: Item[]) => {
       TotalAmt: invoice.TotalAmt,
       Balance: invoice.Balance,
       Others: Object.values(invoice?.Others ?? {}).slice(1).join(", \r\n"),
+      Discount: '',
+      Shipping_Fee: 0,
     };
 
     // Initialize quantities and prices for each item
@@ -49,6 +51,8 @@ export const processInvoicesForExcel = (invoices: Invoice[], items: Item[]) => {
           processedInvoice[`${item.Name}_qty`] = (processedInvoice[`${item.Name}_qty`] || 0) + lineItem.SalesItemLineDetail.Qty;
           processedInvoice[`${item.Name}_price`] = 
             lineItem.SalesItemLineDetail.UnitPrice || lineItem.Amount || 0;
+        } else if (lineItem.SalesItemLineDetail.ItemRef.value === 'SHIPPING_ITEM_ID') {
+          processedInvoice.Shipping_Fee += lineItem.Amount;
         }
       } else if (lineItem.DetailType === 'GroupLineDetail' && lineItem.GroupLineDetail) {
         const groupItemId = lineItem.GroupLineDetail.GroupItemRef.value;
@@ -73,6 +77,8 @@ export const processInvoicesForExcel = (invoices: Invoice[], items: Item[]) => {
             }
           }
         });
+      } else if (lineItem.DetailType === 'DiscountLineDetail' && lineItem.DiscountLineDetail) {
+        processedInvoice.Discount = `${lineItem.DiscountLineDetail.DiscountPercent}%`;
       }
     });
 
@@ -196,6 +202,137 @@ export const downloadExcel = async (data: ProcessedInvoice[], items: Item[], fil
     to: { row: 1, column: worksheet.columns.length }
   };
 
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { 
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+  });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${filename}.xlsx`;
+  link.click();
+  window.URL.revokeObjectURL(url);
+};
+
+// utils/excel.ts (add to existing file)
+interface ProcessedExpense {
+  Date: string;
+  Account: string;
+  Payee: string;
+  PaymentMethod: string;
+  Department: string;
+  Currency: string;
+  Amount: number;
+  Description: string;
+  Customer: string;
+  LineAmount: number;
+  LineAccount: string;
+}
+
+export const processExpensesForExcel = (expenses: Expense[]): ProcessedExpense[] => {
+  const processedData: ProcessedExpense[] = [];
+
+  expenses.forEach(expense => {
+    // If expense has multiple lines, create a row for each line
+    expense.Line.forEach(line => {
+      processedData.push({
+        Date: expense.TxnDate,
+        Account: expense.AccountRef?.name || '',
+        Payee: expense.EntityRef?.name || '',
+        PaymentMethod: expense.PaymentMethodRef?.name || '',
+        Department: expense.DepartmentRef?.name || '',
+        Currency: expense.CurrencyRef?.name || '',
+        Amount: expense.TotalAmt,
+        Description: line.Description || '',
+        Customer: line.AccountBasedExpenseLineDetail?.CustomerRef?.name || '',
+        LineAmount: line.Amount,
+        LineAccount: line.AccountBasedExpenseLineDetail?.AccountRef?.name || ''
+      });
+    });
+  });
+
+  return processedData;
+};
+
+export const downloadExpensesExcel = async (expenses: Expense[], filename: string) => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Expenses');
+
+  // Define columns
+  worksheet.columns = [
+    { header: 'Date', key: 'Date', width: 12 },
+    { header: 'Account', key: 'Account', width: 20 },
+    { header: 'Payee', key: 'Payee', width: 20 },
+    { header: 'Payment Method', key: 'PaymentMethod', width: 15 },
+    { header: 'Department', key: 'Department', width: 15 },
+    { header: 'Currency', key: 'Currency', width: 10 },
+    { header: 'Total Amount', key: 'Amount', width: 12 },
+    { header: 'Description', key: 'Description', width: 30 },
+    { header: 'Customer', key: 'Customer', width: 20 },
+    { header: 'Line Amount', key: 'LineAmount', width: 12 },
+    { header: 'Line Account', key: 'LineAccount', width: 20 }
+  ];
+
+  // Process and add data
+  const data = processExpensesForExcel(expenses);
+  worksheet.addRows(data);
+
+  // Style the header row
+  const headerRow = worksheet.getRow(1);
+  headerRow.font = { bold: true };
+  headerRow.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFE0E0E0' }
+  };
+
+  // Format date and number columns
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return; // Skip header
+
+    // Format date
+    const dateCell = row.getCell('Date');
+    dateCell.numFmt = 'yyyy-mm-dd';
+
+    // Format amounts
+    const amountCell = row.getCell('Amount');
+    const lineAmountCell = row.getCell('LineAmount');
+    amountCell.numFmt = '"$"#,##0.00';
+    lineAmountCell.numFmt = '"$"#,##0.00';
+
+    // Bold non-zero amounts
+    if (amountCell.value && amountCell.value !== 0) {
+      amountCell.font = { bold: true };
+    }
+    if (lineAmountCell.value && lineAmountCell.value !== 0) {
+      lineAmountCell.font = { bold: true };
+    }
+  });
+
+  // Add borders
+  worksheet.eachRow(row => {
+    row.eachCell(cell => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' }
+      };
+    });
+  });
+
+  // Freeze header row
+  worksheet.views = [
+    { state: 'frozen', xSplit: 0, ySplit: 1 }
+  ];
+
+  // Add autofilter
+  worksheet.autoFilter = {
+    from: { row: 1, column: 1 },
+    to: { row: 1, column: worksheet.columns.length }
+  };
+
+  // Generate and download file
   const buffer = await workbook.xlsx.writeBuffer();
   const blob = new Blob([buffer], { 
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 

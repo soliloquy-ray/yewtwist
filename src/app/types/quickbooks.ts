@@ -138,3 +138,56 @@ interface Item {
     LastUpdatedTime: string;
   };
 }
+
+interface ExpenseLine {
+  Id: string;
+  Amount: number;
+  DetailType: string;
+  AccountBasedExpenseLineDetail?: {
+    AccountRef: {
+      value: string;
+      name: string;
+    };
+    BillableStatus?: string;
+    TaxCodeRef?: {
+      value: string;
+    };
+    CustomerRef?: {
+      value: string;
+      name: string;
+    };
+  };
+  Description?: string;
+}
+
+interface Expense {
+  Id: string;
+  PaymentType: string;
+  TxnDate: string;
+  AccountRef: {
+    value: string;
+    name: string;
+  };
+  EntityRef?: {
+    value: string;
+    name: string;
+    type: string;
+  };
+  DepartmentRef?: {
+    value: string;
+    name: string;
+  };
+  CurrencyRef: {
+    value: string;
+    name: string;
+  };
+  TotalAmt: number;
+  Line: ExpenseLine[];
+  PaymentMethodRef?: {
+    value: string;
+    name: string;
+  };
+  Others?: {
+    [key: string]: any;
+  };
+}
