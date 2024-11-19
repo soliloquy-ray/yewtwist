@@ -1,6 +1,6 @@
 'use client';
 // components/Navigation.tsx
-import { Layout, Menu, message } from 'antd';
+import { Layout, Menu } from 'antd';
 import { 
   FileTextOutlined, 
   ShoppingOutlined,
@@ -9,6 +9,7 @@ import {
 } from '@ant-design/icons';
 import { useRouter, usePathname } from 'next/navigation';
 import styled from 'styled-components';
+import { useLoader } from '@/hooks/useLoader';
 
 const { Sider } = Layout;
 
@@ -24,6 +25,7 @@ const Logo = styled.div`
 const Navigation = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const loader = useLoader();
 
   const menuItems = [
     // {
@@ -68,10 +70,11 @@ const Navigation = () => {
         onClick={async ({ key }) => {
           if (key !== "/sync") router.push(key);
           else {
+            loader.show();
             await fetch('/api/sync/items');
             await fetch('/api/sync/invoices');
             await fetch('/api/sync/expenses');
-            message.info('Data synced!');
+            loader.hide();
           }
         }}
       />

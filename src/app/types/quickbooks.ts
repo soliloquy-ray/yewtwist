@@ -143,6 +143,10 @@ interface ExpenseLine {
   Id: string;
   Amount: number;
   DetailType: string;
+  LinkedTxn?: {
+    TxnId: string;
+    TxnType: string;
+  }[];
   AccountBasedExpenseLineDetail?: {
     AccountRef: {
       value: string;

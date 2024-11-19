@@ -5,6 +5,10 @@ const ExpenseLineSchema = new mongoose.Schema({
   Amount: Number,
   Description: String,
   DetailType: String,
+  LinkedTxn: [{
+    TxnId: String,
+    TxnType: String,
+  }],
   AccountBasedExpenseLineDetail: {
     AccountRef: {
       value: String,

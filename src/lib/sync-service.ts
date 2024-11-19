@@ -410,7 +410,7 @@ export class SyncService {
   
       const data = await response.json();
       const expenses: Expense[] = data.QueryResponse.Purchase || [];
-      console.log({sample: expenses[0]})
+      console.log({sample: expenses.flatMap((exp) => exp.Line.flatMap((expLine) => expLine.LinkedTxn))})
       const operations = expenses.map(expense => ({
         updateOne: {
           filter: { Id: expense.Id },
