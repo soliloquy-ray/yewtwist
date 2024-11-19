@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import { useRouter, usePathname } from 'next/navigation';
 import styled from 'styled-components';
-import { useLoader } from '@/hooks/useLoader';
+import { useLoader } from '@/app/hooks/useLoader';
 
 const { Sider } = Layout;
 
@@ -70,7 +70,7 @@ const Navigation = () => {
         onClick={async ({ key }) => {
           if (key !== "/sync") router.push(key);
           else {
-            loader.show();
+            loader.show('Syncing...');
             await fetch('/api/sync/items');
             await fetch('/api/sync/invoices');
             await fetch('/api/sync/expenses');

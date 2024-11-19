@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import StyledComponentsRegistry from '@/app/registry';
 import Loader from "./components/Loader";
+import { ReduxProvider } from "./providers/ReduxProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,9 +28,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>        
-        <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
-        <Loader />
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <ReduxProvider>
+          <Loader />
+          <StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+        </ReduxProvider>
       </body>
     </html>
   );

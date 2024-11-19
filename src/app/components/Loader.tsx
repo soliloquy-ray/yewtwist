@@ -1,7 +1,8 @@
-import { useSelector } from 'react-redux';
+'use client';
 import { RootState } from '@/app/store/store';
 import { Modal, Spin } from 'antd';
 import styled from 'styled-components';
+import { useAppSelector } from '../store/hooks';
 
 const StyledModal = styled(Modal)`
   .ant-modal-content {
@@ -27,7 +28,7 @@ const Message = styled.div`
 `;
 
 const Loader = () => {
-  const { isLoading, message } = useSelector((state: RootState) => state.loader);
+  const { isLoading, message } = useAppSelector((state: RootState) => state.loader);
 
   return (
     <StyledModal

@@ -1,8 +1,10 @@
-import { useDispatch } from 'react-redux';
+'use client';
+
+import { useAppDispatch } from '@/app/store/hooks';
 import { showLoader, hideLoader } from '@/app/store/loaderSlice';
 
 export const useLoader = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const show = (message?: string) => {
     dispatch(showLoader(message));
