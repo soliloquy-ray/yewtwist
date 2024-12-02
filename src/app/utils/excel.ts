@@ -217,41 +217,34 @@ export const downloadExcel = async (data: ProcessedInvoice[], items: Item[], fil
 // utils/excel.ts (add to existing file)
 interface ProcessedExpense {
   Date: string;
-  Account: string;
+  Type: string;
+  PaymentRefNum: string;
   Payee: string;
+  Class: string;
+  Category: string;
+  TotalBeforeTax: number;
+  SalesTax: number;
+  Total: number;
+  PaymentAccount: string;
   PaymentMethod: string;
-  Department: string;
-  Currency: string;
-  Amount: number;
-  Description: string;
-  Customer: string;
-  LineAmount: number;
-  LineAccount: string;
+  Memo: string;
 }
 
 export const processExpensesForExcel = (expenses: Expense[]): ProcessedExpense[] => {
-  const processedData: ProcessedExpense[] = [];
-
-  expenses.forEach(expense => {
-    // If expense has multiple lines, create a row for each line
-    expense.Line.forEach(line => {
-      processedData.push({
-        Date: expense.TxnDate,
-        Account: expense.AccountRef?.name || '',
-        Payee: expense.EntityRef?.name || '',
-        PaymentMethod: expense.PaymentMethodRef?.name || '',
-        Department: expense.DepartmentRef?.name || '',
-        Currency: expense.CurrencyRef?.name || '',
-        Amount: expense.TotalAmt,
-        Description: line.Description || '',
-        Customer: line.AccountBasedExpenseLineDetail?.CustomerRef?.name || '',
-        LineAmount: line.Amount,
-        LineAccount: line.AccountBasedExpenseLineDetail?.AccountRef?.name || ''
-      });
-    });
-  });
-
-  return processedData;
+  return expenses.map(expense => ({
+    Date: expense.TxnDate,
+    Type: expense.PaymentType || 'Expense',
+    PaymentRefNum: expense.PaymentRefNum || '',
+    Payee: expense.EntityRef?.name || '',
+    Class: expense.ClassRef?.name || '',
+    Category: expense.AccountRef?.name || '',
+    TotalBeforeTax: expense.TotalAmt - (expense.TxnTaxDetail?.TotalTax || 0),
+    SalesTax: expense.TxnTaxDetail?.TotalTax || 0,
+    Total: expense.TotalAmt,
+    PaymentAccount: expense.AccountRef?.name || '',
+    PaymentMethod: expense.PaymentMethodRef?.name || '',
+    Memo: expense.PrivateNote || ''
+  }));
 };
 
 export const downloadExpensesExcel = async (expenses: Expense[], filename: string) => {
@@ -261,23 +254,23 @@ export const downloadExpensesExcel = async (expenses: Expense[], filename: strin
   // Define columns
   worksheet.columns = [
     { header: 'Date', key: 'Date', width: 12 },
-    { header: 'Account', key: 'Account', width: 20 },
-    { header: 'Payee', key: 'Payee', width: 20 },
+    { header: 'Type', key: 'Type', width: 10 },
+    { header: 'Ref No.', key: 'PaymentRefNum', width: 12 },
+    { header: 'Payee', key: 'Payee', width: 30 },
+    { header: 'Class', key: 'Class', width: 15 },
+    { header: 'Category', key: 'Category', width: 20 },
+    { header: 'Total Before Sales Tax', key: 'TotalBeforeTax', width: 18 },
+    { header: 'Sales Tax', key: 'SalesTax', width: 12 },
+    { header: 'Total', key: 'Total', width: 12 },
+    { header: 'Payment Account', key: 'PaymentAccount', width: 20 },
     { header: 'Payment Method', key: 'PaymentMethod', width: 15 },
-    { header: 'Department', key: 'Department', width: 15 },
-    { header: 'Currency', key: 'Currency', width: 10 },
-    { header: 'Total Amount', key: 'Amount', width: 12 },
-    { header: 'Description', key: 'Description', width: 30 },
-    { header: 'Customer', key: 'Customer', width: 20 },
-    { header: 'Line Amount', key: 'LineAmount', width: 12 },
-    { header: 'Line Account', key: 'LineAccount', width: 20 }
+    { header: 'Memo', key: 'Memo', width: 30 }
   ];
 
-  // Process and add data
   const data = processExpensesForExcel(expenses);
   worksheet.addRows(data);
 
-  // Style the header row
+  // Style header
   const headerRow = worksheet.getRow(1);
   headerRow.font = { bold: true };
   headerRow.fill = {
@@ -286,30 +279,23 @@ export const downloadExpensesExcel = async (expenses: Expense[], filename: strin
     fgColor: { argb: 'FFE0E0E0' }
   };
 
-  // Format date and number columns
+  // Format numbers and dates
   worksheet.eachRow((row, rowNumber) => {
-    if (rowNumber === 1) return; // Skip header
+    if (rowNumber === 1) return;
 
-    // Format date
     const dateCell = row.getCell('Date');
     dateCell.numFmt = 'yyyy-mm-dd';
 
-    // Format amounts
-    const amountCell = row.getCell('Amount');
-    const lineAmountCell = row.getCell('LineAmount');
-    amountCell.numFmt = '"$"#,##0.00';
-    lineAmountCell.numFmt = '"$"#,##0.00';
-
-    // Bold non-zero amounts
-    if (amountCell.value && amountCell.value !== 0) {
-      amountCell.font = { bold: true };
-    }
-    if (lineAmountCell.value && lineAmountCell.value !== 0) {
-      lineAmountCell.font = { bold: true };
-    }
+    ['TotalBeforeTax', 'SalesTax', 'Total'].forEach(col => {
+      const cell = row.getCell(col);
+      cell.numFmt = '"$"#,##0.00';
+      if (cell.value && cell.value !== 0) {
+        cell.font = { bold: true };
+      }
+    });
   });
 
-  // Add borders
+  // Add borders and freeze header
   worksheet.eachRow(row => {
     row.eachCell(cell => {
       cell.border = {
@@ -321,18 +307,8 @@ export const downloadExpensesExcel = async (expenses: Expense[], filename: strin
     });
   });
 
-  // Freeze header row
-  worksheet.views = [
-    { state: 'frozen', xSplit: 0, ySplit: 1 }
-  ];
+  worksheet.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }];
 
-  // Add autofilter
-  worksheet.autoFilter = {
-    from: { row: 1, column: 1 },
-    to: { row: 1, column: worksheet.columns.length }
-  };
-
-  // Generate and download file
   const buffer = await workbook.xlsx.writeBuffer();
   const blob = new Blob([buffer], { 
     type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
@@ -344,3 +320,4 @@ export const downloadExpensesExcel = async (expenses: Expense[], filename: strin
   link.click();
   window.URL.revokeObjectURL(url);
 };
+

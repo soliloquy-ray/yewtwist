@@ -1,68 +1,70 @@
 import mongoose, { Schema } from 'mongoose';
 
-const ExpenseLineSchema = new mongoose.Schema({
-  Id: String,
-  Amount: Number,
-  Description: String,
-  DetailType: String,
-  LinkedTxn: [{
-    TxnId: String,
-    TxnType: String,
-  }],
-  AccountBasedExpenseLineDetail: {
-    AccountRef: {
-      value: String,
-      name: String
-    },
-    BillableStatus: String,
-    TaxCodeRef: {
-      value: String
-    },
-    CustomerRef: {
-      value: String,
-      name: String
-    }
-  }
+const ExpenseCategoryDetailSchema = new Schema({
+  category: {
+    value: String,
+    name: String
+  },
+  description: String,
+  amount: Number,
+  salesTax: Number,
+  billable: Boolean,
+  customer: {
+    value: String,
+    name: String
+  },
+  class: String
 });
 
-const ExpenseSchema = new mongoose.Schema({
-  Id: String,
-  PaymentType: String,
-  TxnDate: String,
-  AccountRef: {
+const ExpenseItemDetailSchema = new Schema({
+  productService: {
     value: String,
     name: String
   },
-  EntityRef: {
-    type: new Schema({
-      value: String,
-      name: String,
-      type: String
-    }, { _id: false })
-  }, // Changed from string to object
-  DepartmentRef: {
+  description: String,
+  qty: Number,
+  rate: Number,
+  amount: Number,
+  salesTax: Number,
+  billable: Boolean,
+  customer: {
     value: String,
     name: String
   },
-  CurrencyRef: {
+  class: String
+});
+
+const ExpenseSchema = new Schema({
+  Id: { type: String, required: true, unique: true },
+  date: String,
+  type: String,
+  no: String,
+  payee: String,
+  class: String,
+  category: String,
+  totalBeforeSalesTax: Number,
+  salesTax: Number,
+  total: Number,
+  paymentAccount: {
     value: String,
     name: String
   },
-  TotalAmt: Number,
-  Line: [ExpenseLineSchema],
-  PaymentMethodRef: {
-    value: String,
-    name: String
-  },
-  Others: mongoose.Schema.Types.Mixed
+  paymentMethod: String,
+  refNo: String,
+  tags: [String],
+  memo: String,
+  categoryDetails: [ExpenseCategoryDetailSchema],
+  itemDetails: [ExpenseItemDetailSchema],
+  attachments: [{
+    fileName: String,
+    url: String
+  }]
 }, {
   timestamps: true
 });
 
-// Add indexes
-ExpenseSchema.index({ Id: 1 }, { unique: true });
-ExpenseSchema.index({ TxnDate: 1 });
-ExpenseSchema.index({ 'EntityRef.value': 1 });
-ExpenseSchema.index({ 'AccountRef.value': 1 });
+ExpenseSchema.index({ date: 1 });
+ExpenseSchema.index({ payee: 1 });
+ExpenseSchema.index({ category: 1 });
 
 export const Expense = mongoose.models.Expense || mongoose.model('Expense', ExpenseSchema);

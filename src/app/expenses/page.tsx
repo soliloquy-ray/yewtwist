@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Table, Space, Button, DatePicker, Input, Card, message } from 'antd';
+import { Table, Space, Button, DatePicker, Input, Card, message, Tag, Row } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { SearchOutlined, DownloadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import PageWithNav from '@/app/components/PageWithNav';
 import { downloadExpensesExcel } from '@/app/utils/excel';
-
+import dayjs from 'dayjs';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const { RangePicker } = DatePicker;
 
 const PageContainer = styled.div`
@@ -26,69 +27,114 @@ export default function ExpensesPage() {
     endDate: '',
     search: ''
   });
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0
+  });
+
+  
 
   const columns: ColumnsType<Expense> = [
     {
-      title: 'Date',
-      dataIndex: 'TxnDate',
+      title: 'DATE',
+      dataIndex: 'date',
       key: 'date',
-      render: (date: string) => new Date(date).toLocaleDateString(),
+      render: (date: string) => dayjs(date).format('MM/DD/YYYY'),
     },
     {
-      title: 'Account',
-      dataIndex: ['AccountRef', 'name'],
-      key: 'account',
+      title: 'TYPE',
+      dataIndex: 'type',
+      key: 'type',
     },
     {
-      title: 'Payee',
-      dataIndex: ['EntityRef', 'name'],
+      title: 'TXN ID',
+      dataIndex: 'Id',
+      key: 'no',
+    },
+    {
+      title: 'PAYEE',
+      dataIndex: 'payee',
       key: 'payee',
     },
+    // {
+    //   title: 'CLASS',
+    //   dataIndex: 'class',
+    //   key: 'class',
+    // },
     {
-      title: 'Payment Method',
-      dataIndex: ['PaymentMethodRef', 'name'],
-      key: 'paymentMethod',
+      title: 'CATEGORY',
+      dataIndex: 'category',
+      key: 'category',
     },
     {
-      title: 'Department',
-      dataIndex: ['DepartmentRef', 'name'],
-      key: 'department',
-    },
-    {
-      title: 'Currency',
-      dataIndex: ['CurrencyRef', 'name'],
-      key: 'currency',
-    },
-    {
-      title: 'Amount',
-      dataIndex: 'TotalAmt',
-      key: 'amount',
+      title: 'TOTAL BEFORE SALES TAX',
+      dataIndex: 'totalBeforeSalesTax',
+      key: 'totalBeforeSalesTax',
       align: 'right',
       render: (amount: number) => `$${amount.toFixed(2)}`,
     },
     {
-      title: 'Details',
-      key: 'details',
-      render: (_, expense) => (
-        <ul>
-          {expense.Line.map((line, index) => (
-            <li key={index}>
-              {line.Description}: ${line.Amount.toFixed(2)}
-              {line.AccountBasedExpenseLineDetail?.CustomerRef && 
-                ` (${line.AccountBasedExpenseLineDetail.CustomerRef.name})`}
-            </li>
-          ))}
-        </ul>
-      ),
+      title: 'SALES TAX',
+      dataIndex: 'salesTax',
+      key: 'salesTax',
+      align: 'right',
+      render: (amount: number) => `$${amount.toFixed(2)}`,
+    },
+    {
+      title: 'TOTAL',
+      dataIndex: 'total',
+      key: 'total',
+      align: 'right',
+      render: (amount: number) => `$${amount.toFixed(2)}`,
+    },
+    {
+      title: 'MEMO',
+      dataIndex: 'memo',
+      key: 'memo',
+    },
+    {
+      title: 'CATEGORY DETAILS',
+      key: 'categoryDetails',
+      render: (_, record: any) => {
+        return record.categoryDetails.map((categoryDetail: any, index: number) => (<Row key={index}>
+          <Tag color='blue'>{categoryDetail.description}</Tag> - <Tag color='green'>${categoryDetail.amount}</Tag>
+        </Row>))
+      }/* (
+        <Table
+          size="small"
+          showHeader={false}
+          pagination={false}
+          dataSource={record.categoryDetails}
+          columns={[
+            {
+              title: 'Description',
+              dataIndex: 'description',
+              render: (text) => <Tag>{text}</Tag>
+            },
+            {
+              title: 'Amount',
+              dataIndex: 'amount',
+              render: (text) => `$${text}`
+            },
+          ]}
+        />
+      ), */
     }
   ];
+  
 
-  const handleSearch = async () => {
+  const handleSearch = async (page = pagination.current, pageSize = pagination.pageSize) => {
+    console.log({ pagination });
     setLoading(true);
     try {
-      const response = await fetch('/api/quickbooks/expenses?' + new URLSearchParams(filters));
+      const response = await fetch(`/api/quickbooks/expenses?page=${page}&pageSize=${pageSize ?? 10}&` + new URLSearchParams(filters));
       const data = await response.json();
       setExpenses(data.expenses);
+      setPagination(prev => ({
+        ...prev,
+        total: data.pagination.total
+      }));
       message.success(`Found ${data.pagination.total} expenses`);
     } catch (error) {
       message.error(JSON.stringify(error));
@@ -121,6 +167,8 @@ export default function ExpensesPage() {
                   });
                 }
               }}
+              allowClear
+              allowEmpty
             />
             <Input
               placeholder="Search expenses..."
@@ -131,7 +179,7 @@ export default function ExpensesPage() {
               <Button 
                 type="primary" 
                 icon={<SearchOutlined />}
-                onClick={handleSearch}
+                onClick={() => handleSearch()}
                 loading={loading}
               >
                 Search
@@ -148,16 +196,26 @@ export default function ExpensesPage() {
         </SearchCard>
 
         <Table
+          showSorterTooltip
           columns={columns}
           dataSource={expenses}
           rowKey="Id"
           loading={loading}
-          scroll={{ x: 'max-content' }}
           pagination={{
-            pageSize: 10,
+            ...pagination,
             showSizeChanger: true,
             showQuickJumper: true,
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+            onChange: (page, pageSize) => {
+              setPagination(prev => ({
+                ...prev,
+                current: page,
+                pageSize: pageSize
+              }));
+              handleSearch(page, pageSize);
+            }
           }}
+          scroll={{ x: 'max-content' }}
         />
       </PageContainer>
     </PageWithNav>

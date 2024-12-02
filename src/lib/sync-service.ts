@@ -4,7 +4,6 @@ import { QB_CONFIG } from './config';
 import { Item } from '@/app/models/Item';
 import { Invoice } from '@/app/models/Invoice';
 import { Expense } from '@/app/models/Expense';
-import { AppError, handleCastError, handleMongooseError } from './error-handler';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export class SyncService {
   static async syncItems() {
@@ -393,7 +392,7 @@ export class SyncService {
       }
       
       query += ' MAXRESULTS 1000';
-  
+      
       const response = await fetch(
         `${QB_CONFIG.baseUrl}/${QB_CONFIG.realmId}/query?query=${encodeURIComponent(query)}`,
         {
@@ -403,55 +402,43 @@ export class SyncService {
           }
         }
       );
-  
-      if (!response.ok) {
-        throw new AppError('Failed to fetch expenses from QuickBooks', 500);
-      }
-  
+
       const data = await response.json();
       const expenses: Expense[] = data.QueryResponse.Purchase || [];
-      console.log({sample: expenses.flatMap((exp) => exp.Line.flatMap((expLine) => expLine.LinkedTxn))})
+
       const operations = expenses.map(expense => ({
         updateOne: {
           filter: { Id: expense.Id },
           update: {
             $set: {
-              Id: expense.Id,
-              PaymentType: expense.PaymentType,
-              TxnDate: expense.TxnDate,
-              AccountRef: expense.AccountRef,
-              EntityRef: expense.EntityRef || {}, // Handle potentially missing EntityRef
-              DepartmentRef: expense.DepartmentRef,
-              CurrencyRef: expense.CurrencyRef,
-              TotalAmt: expense.TotalAmt,
-              Line: expense.Line,
-              PaymentMethodRef: expense.PaymentMethodRef,
-              Others: expense.Others,
-              lastSyncedAt: new Date()
+              date: expense.TxnDate,
+              type: 'Expense',
+              payee: expense.EntityRef?.name,
+              class: expense.ClassRef?.name,
+              category: expense.AccountRef?.name,
+              totalBeforeSalesTax: expense.TotalAmt - (expense.TxnTaxDetail?.TotalTax || 0),
+              salesTax: expense.TxnTaxDetail?.TotalTax || 0,
+              total: expense.TotalAmt,
+              paymentAccount: expense.AccountRef,
+              memo: expense.PrivateNote,
+              categoryDetails: expense.Line.map(line => ({
+                category: line.AccountRef,
+                description: line.Description,
+                amount: line.Amount,
+                salesTax: line.TaxAmount,
+                customer: line.CustomerRef
+              }))
             }
           },
           upsert: true
         }
       }));
-  
-      try {
-        const result = await Expense.bulkWrite(operations);
-        return {
-          success: true,
-          matched: result.matchedCount,
-          modified: result.modifiedCount,
-          upserted: result.upsertedCount,
-          timestamp: new Date()
-        };
-      } catch (error: any) {
-        if (error.name === 'CastError') {
-          throw handleCastError(error);
-        }
-        throw error;
-      }
+
+      const result = await Expense.bulkWrite(operations);
+      return { success: true, count: result.upsertedCount + result.modifiedCount };
     } catch (error) {
       console.error('Expense sync error:', error);
-      throw handleMongooseError(error);
+      throw error;
     }
   }
 }

@@ -142,11 +142,8 @@ interface Item {
 interface ExpenseLine {
   Id: string;
   Amount: number;
+  Description?: string;
   DetailType: string;
-  LinkedTxn?: {
-    TxnId: string;
-    TxnType: string;
-  }[];
   AccountBasedExpenseLineDetail?: {
     AccountRef: {
       value: string;
@@ -160,14 +157,29 @@ interface ExpenseLine {
       value: string;
       name: string;
     };
+    ClassRef?: {
+      value: string;
+      name: string;
+    };
   };
-  Description?: string;
+  AccountRef?: {
+    value: string;
+    name: string;
+  };
+  TaxAmount?: number;
+  CustomerRef?: {
+    value: string;
+    name: string;
+  };
 }
 
 interface Expense {
   Id: string;
   PaymentType: string;
   TxnDate: string;
+  TotalAmt: number;
+  PaymentRefNum?: string;
+  PrivateNote?: string;
   AccountRef: {
     value: string;
     name: string;
@@ -177,21 +189,21 @@ interface Expense {
     name: string;
     type: string;
   };
-  DepartmentRef?: {
+  ClassRef?: {
     value: string;
     name: string;
   };
-  CurrencyRef: {
-    value: string;
-    name: string;
+  TxnTaxDetail?: {
+    TotalTax: number;
   };
-  TotalAmt: number;
   Line: ExpenseLine[];
+  CategoryDetails?: {
+    description: string;
+    amount: number;
+  }[];
   PaymentMethodRef?: {
     value: string;
     name: string;
   };
-  Others?: {
-    [key: string]: any;
-  };
+  Balance?: number;
 }

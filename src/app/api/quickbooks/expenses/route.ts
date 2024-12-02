@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     const endDate = searchParams.get('endDate');
     const search = searchParams.get('search');
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
+    const limit = parseInt(searchParams.get('pageSize') || '10');
 
     await connectDB();
 
@@ -18,18 +18,22 @@ export async function GET(request: Request) {
     const query: any = {};
 
     if (startDate) {
-      query.TxnDate = { $gte: startDate };
+      query.date = { $gte: startDate };
     }
+    console.log(query);
     if (endDate) {
-      query.TxnDate = { ...query.TxnDate, $lte: endDate };
+      query.date = { ...query.date, $lte: endDate };
     }
     if (search) {
       query.$or = [
+        { 'Id': { $regex: search, $options: 'i' } },
         { 'EntityRef.name': { $regex: search, $options: 'i' } },
         { 'AccountRef.name': { $regex: search, $options: 'i' } },
         { 'Line.Description': { $regex: search, $options: 'i' } }
       ];
     }
+
+    console.log({ query });
 
     // Execute query with pagination
     const [expenses, total] = await Promise.all([
@@ -44,7 +48,7 @@ export async function GET(request: Request) {
       expenses,
       pagination: {
         page,
-        limit,
+        pageSize: limit,
         total,
         pages: Math.ceil(total / limit)
       }
