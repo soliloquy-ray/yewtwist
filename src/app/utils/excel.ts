@@ -94,7 +94,7 @@ export const downloadExcel = async (data: ProcessedInvoice[], items: Item[], fil
   const worksheet = workbook.addWorksheet('Invoices');
 
   // Create headers
-  const baseColumns = ['DocNumber', 'TxnDate', 'ShipDate', 'DueDate', 'CustomerName', 'Billing_Address', 'Shipping_Address', 'Shipper', 'Customer_Number', 'Customer_PO_Number', 'Customer_Memo', 'Private_Note', 'Billing_Email', 'TotalAmt', 'Balance', 'Others', 'Discount', 'Shipping_Fee'];
+  const baseColumns = ['DocNumber', 'TxnDate', 'ShipDate', 'DueDate', 'CustomerName', 'Billing_Address', 'Shipping_Address', 'Shipper', 'Customer_Number', 'Customer_PO_Number', 'Customer_Memo', 'Private_Note', 'Billing_Email', 'TotalAmt', 'Balance', 'Others', 'Discount', 'Shipping_Fee','Tax'];
   const itemColumns = items.flatMap(item => [
     { 
       header: `${item.Name} Qty`,
