@@ -240,6 +240,14 @@ export default function InvoiceDetailsPage() {
       }
     },
     {
+      title: 'Tax',
+      key: 'Tax',
+      width: 100,
+      render: (_, invoice) => {
+        return invoice.Others?.TxnTaxDetail?.TotalTax ?? 0;
+      }
+    },
+    {
       title: 'Line Items',
       key: 'lineItems',
       width: 400,

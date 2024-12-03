@@ -34,6 +34,7 @@ export const processInvoicesForExcel = (invoices: Invoice[], items: Item[]) => {
       Others: Object.values(invoice?.Others ?? {}).slice(1).join(", \r\n"),
       Discount: '',
       Shipping_Fee: 0,
+      Tax: invoice.Others?.TxnTaxDetail?.TotalTax ?? 0,
     };
 
     // Initialize quantities and prices for each item
