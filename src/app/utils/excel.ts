@@ -52,7 +52,7 @@ export const processInvoicesForExcel = (invoices: Invoice[], items: Item[]) => {
           processedInvoice[`${item.Name}_price`] = 
             lineItem.SalesItemLineDetail.UnitPrice || lineItem.Amount || 0;
         } else if (lineItem.SalesItemLineDetail.ItemRef.value === 'SHIPPING_ITEM_ID') {
-          processedInvoice.Shipping_Fee += lineItem.Amount;
+          processedInvoice.Shipping_Fee += Number(lineItem.Amount ?? 0);
         }
       } else if (lineItem.DetailType === 'GroupLineDetail' && lineItem.GroupLineDetail) {
         const groupItemId = lineItem.GroupLineDetail.GroupItemRef.value;
@@ -93,7 +93,7 @@ export const downloadExcel = async (data: ProcessedInvoice[], items: Item[], fil
   const worksheet = workbook.addWorksheet('Invoices');
 
   // Create headers
-  const baseColumns = ['DocNumber', 'TxnDate', 'ShipDate', 'DueDate', 'CustomerName', 'Billing_Address', 'Shipping_Address', 'Shipper', 'Customer_Number', 'Customer_PO_Number', 'Customer_Memo', 'Private_Note', 'Billing_Email', 'TotalAmt', 'Balance'];
+  const baseColumns = ['DocNumber', 'TxnDate', 'ShipDate', 'DueDate', 'CustomerName', 'Billing_Address', 'Shipping_Address', 'Shipper', 'Customer_Number', 'Customer_PO_Number', 'Customer_Memo', 'Private_Note', 'Billing_Email', 'TotalAmt', 'Balance', 'Others', 'Discount', 'Shipping_Fee'];
   const itemColumns = items.flatMap(item => [
     { 
       header: `${item.Name} Qty`,
