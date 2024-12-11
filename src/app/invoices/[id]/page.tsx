@@ -309,8 +309,8 @@ Centimeters: 11.5 x 1.5 x 17</p>;
           <tr style={{display: "flex"}}>
             <td colSpan={2} style={{flex: 2}}><ExtendedInput value={tenValue} onChange={(v: any) => setTenValue(v.target.value)} bordered={false} style={{width: "100%", border: tenValue === "" ? "1px solid red" : ""}}/></td>
             <td style={{flex: 1}}><ExtendedSelect value={elevenValue} onChange={(v: any) => setElevenValue(v)} bordered={false} style={{width: "100%", border: elevenValue === "" ? "1px solid red" : ""}}>
-              <Option>F.O.B.</Option>
-              <Option>E.X.W.</Option>
+              <Option value="F.O.B">F.O.B.</Option>
+              <Option value="E.X.W.">E.X.W.</Option>
               </ExtendedSelect>
             </td>
             <td style={{flex: 1}}>

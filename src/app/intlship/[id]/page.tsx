@@ -218,7 +218,7 @@ export default function InvoiceView() {
             <td><b>Phone Number: </b> 
             {invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue}</td>
             <td><b>Email: </b> {invoice.BillEmail.Address}</td>
-            <td style={{ display: "flex", gap: 10}}><b style={{flex: 0}}>Source: </b><ExtendedSelect bordered={false} style={{flex: 1}}>
+            <td style={{ display: "flex", gap: 10, alignItems: "center"}}><b style={{flex: 0}}>Source: </b><ExtendedSelect bordered={false} style={{flex: 1}}>
               <Option value="Phone">Phone</Option>
               <Option value="Email">Email</Option>
               <Option value="Fax">Fax</Option>
@@ -282,7 +282,7 @@ export default function InvoiceView() {
             const productCode = getProductCodeFromDesc(itemDescription?.toLocaleLowerCase() ?? "");            
             const actualQty = item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.Qty ?? item.SalesItemLineDetail?.Qty;
             return (
-            <tr key={item.Id}>
+            <tr key={item.Id} onClick={() => setInvoiceLine((pv) => [...pv.filter((lineItem) => lineItem.Id !== item.Id)])}>
               <td style={{textAlign: "center"}}>{
                   productCode
               }</td>
