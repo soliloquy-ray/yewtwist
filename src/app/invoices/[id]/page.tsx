@@ -193,7 +193,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
   useEffect(() => {
     if (invoice) {
       setInvoiceLine(invoice.Line.map((lineItems) => ({...lineItems, hidden: false })));
-      setTenValue(`${invoice?.ShipMethodRef?.name}: ${invoice?.Others?.TrackingNum}`);
+      setTenValue(`${invoice?.ShipMethodRef?.name ?? ""} ${invoice?.Others?.TrackingNum ?? ""}`);
     }
     console.log({ twelveValue });
   }, [invoice, twelveValue])
