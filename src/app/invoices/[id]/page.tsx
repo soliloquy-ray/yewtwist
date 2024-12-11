@@ -126,7 +126,7 @@ export default function InvoiceView() {
 
   const getProductCodeFromDesc = (desc: string): string => {
     let type = "";
-    let color = desc.includes("green") ? "Green" : "Orange";
+    const color = desc.includes("green") ? "Green" : "Orange";
     if (desc.includes("master box")) {
       type = "YT300";
     } else if (desc.includes("box")) {
@@ -174,7 +174,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
     let gs = 0;
     lineItems
             ?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType) && item?.SalesItemLineDetail?.ItemRef.value !== "SHIPPING_ITEM_ID" && !item.SalesItemLineDetail?.ItemRef?.name?.includes('Stripe') && !item.GroupLineDetail?.GroupItemRef?.name.includes('Stripe') && !item?.hidden)
-            ?.map((item, index) => {
+            ?.map((item) => {
               console.log({ item });
               const actualPkg = item.GroupLineDetail?.Quantity ?? item.SalesItemLineDetail?.Qty;
               
@@ -289,7 +289,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
           <tr>
             <td>
               <ExtendedSelect value={sixValue} onChange={(v: any) => setSixValue(v)} bordered={false} style={{width: "100%",border: sixValue === "" ? "1px solid red" : ""}}>
-                {Object.entries(invoice?.BillAddr ?? {}).map(([a, b], index) => (<Option key={index}>{b}</Option>))}                
+                {Object.entries(invoice?.BillAddr ?? {}).map(([_, b], index) => (<Option key={index}>{b}</Option>))}                
               </ExtendedSelect>
               </td>
             <td>9018.9080</td>
