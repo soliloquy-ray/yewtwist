@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Table, Space, Button, DatePicker, Input, Card, message, Collapse, Row } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { DownloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { fetchInvoices, /* searchCustomers */ } from '@/lib/quickbooks-api';
 import PageWithNav from '@/app/components/PageWithNav';
@@ -16,6 +16,12 @@ const { Panel } = Collapse;
 
 const PageContainer = styled.div`
   padding: 24px;
+  .ant-table-cell {
+  font-size: 12px;
+  }
+  .ant-btn {
+  font-size: 12px;
+  }
 `;
 
 const SearchCard = styled(Card)`
@@ -281,13 +287,27 @@ export default function InvoiceDetailsPage() {
       fixed: 'right',
       width: 100,
       render: (_, invoice) => (
-        <Button 
+        <>
+        {/* <Button 
           onClick={() => handleDownload([invoice], invoice.DocNumber)}
           icon={<DownloadOutlined />}
           size="small"
         >
           Export
-        </Button>
+        </Button> */}
+        <Button
+        target='_blank'
+         href={`/invoices/${invoice.DocNumber}`}
+         size="small">
+          Commercial Invoice
+         </Button>
+        <Button
+         href={`/intlship/${invoice.DocNumber}`}
+        target='_blank'
+         size="small">
+          International Shipment
+         </Button>
+         </>
       ),
     }
   ];

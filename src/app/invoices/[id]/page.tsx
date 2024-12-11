@@ -193,8 +193,10 @@ Centimeters: 11.5 x 1.5 x 17</p>;
   useEffect(() => {
     if (invoice) {
       setInvoiceLine(invoice.Line.map((lineItems) => ({...lineItems, hidden: false })));
+      setTenValue(`${invoice?.ShipMethodRef?.name}: ${invoice?.Others?.TrackingNum}`);
     }
-  }, [invoice])
+    console.log({ twelveValue });
+  }, [invoice, twelveValue])
 
   if (!invoice) return null;
 
@@ -345,7 +347,8 @@ Centimeters: 11.5 x 1.5 x 17</p>;
             item.SalesItemLineDetail?.ItemRef.name;
             const actualQty = item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.Qty ?? item.SalesItemLineDetail?.Qty;
             const actualPkg = item.GroupLineDetail?.Quantity ?? item.SalesItemLineDetail?.Qty;
-            const actualPrice = item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.UnitPrice ?? item.SalesItemLineDetail?.UnitPrice;
+            const actualPrice = Number(twelveValue) === 1 ? 3.5 : item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.UnitPrice ?? item.SalesItemLineDetail?.UnitPrice;
+            const actualAmount = Number(twelveValue) === 1 ? Number(actualPrice) * Number(actualQty) : item.Amount;
               return <tr key={index} style={{cursor: 'pointer'}} onClick={() => setInvoiceLine((pv) => [...pv.filter((lineItem) => lineItem.Id !== item.Id)])}>
                 <td>{
                   getProductCodeFromDesc(itemDescription?.toLocaleLowerCase() ?? "")
@@ -354,11 +357,11 @@ Centimeters: 11.5 x 1.5 x 17</p>;
                 <td>{getPackagingFromDesc(itemDescription?.toLocaleLowerCase() ?? "")}</td>
                 <td>{itemDescription === 'Discounts given' ? 'Discount' : itemDescription}</td>
                 <td style={{textAlign: "center"}}>{itemDescription?.toLocaleLowerCase().includes("orange") ? "240704" : "240203"}</td>
-                <td>{actualQty}</td>
+                <td style={{textAlign: "center"}}>{actualQty}</td>
                 <td style={{textAlign: "center"}}>{ item.DetailType === 'DiscountLineDetail' ? 'Percent' : 'Unit' }</td>
                 <td style={{textAlign: "center"}}>{getWeightFromLine(itemDescription?.toLocaleLowerCase() ?? "", actualPkg!, actualQty!)}</td>
                 <td style={{textAlign: "right"}}>${Number(actualPrice?.toFixed(2)).toLocaleString()}</td>
-                <td style={{textAlign: "right"}}>${Number(item.Amount.toFixed(2)).toLocaleString()}</td>
+                <td style={{textAlign: "right"}}>${Number(actualAmount.toFixed(2)).toLocaleString()}</td>
               </tr>
           })}
           <tr>
@@ -372,7 +375,11 @@ Centimeters: 11.5 x 1.5 x 17</p>;
             <th colSpan={2}>Total Weight in KGS: </th>
             <th style={{textAlign: "center"}}>{getTotalWeight(invoiceLine)}</th>
             <th style={{textAlign: "center"}}>Total Invoice</th>
-            <th style={{textAlign: "right"}}>${Number(invoiceLine
+            <th style={{textAlign: "right"}}>${Number(twelveValue) === 1 ? 3.5 * invoiceLine
+            ?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType)).reduce((acc, item) => {
+              const actualQty = item.GroupLineDetail?.Quantity ?? item.SalesItemLineDetail?.Qty;
+              return acc + Number(actualQty ?? 0);
+              }, 0) : Number(invoiceLine
             ?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType) && item?.SalesItemLineDetail?.ItemRef.value !== "SHIPPING_ITEM_ID" && !item.SalesItemLineDetail?.ItemRef?.name?.includes('Stripe') && !item.GroupLineDetail?.GroupItemRef?.name.includes('Stripe')).reduce((acc, sum) => acc + sum.Amount, 0).toFixed(2)).toLocaleString()}</th>
           </tr>
           <tr>
