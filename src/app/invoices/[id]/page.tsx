@@ -208,7 +208,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
       >
         Print Invoice
       </PrintButton>
-      <Image height={50} style={{objectFit: "contain"}} src={"/Yewtwist-logo.png"}/>
+      <Image alt="yewtwist logo" height={50} style={{objectFit: "contain"}} src={"/Yewtwist-logo.png"}/>
       <Title style={{fontSize: 20, letterSpacing: 10}}>COMMERCIAL INVOICE</Title>
 
       <InvoiceTable>
@@ -289,7 +289,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
           <tr>
             <td>
               <ExtendedSelect value={sixValue} onChange={(v: any) => setSixValue(v)} bordered={false} style={{width: "100%",border: sixValue === "" ? "1px solid red" : ""}}>
-                {Object.entries(invoice?.BillAddr ?? {}).map(([_, b], index) => (<Option key={index}>{b}</Option>))}                
+                {Object.entries(invoice?.BillAddr ?? {}).map(([a, b], index) => (<Option key={`${a}${index}`}>{b}</Option>))}                
               </ExtendedSelect>
               </td>
             <td>9018.9080</td>
