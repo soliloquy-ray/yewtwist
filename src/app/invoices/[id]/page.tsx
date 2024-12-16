@@ -196,7 +196,13 @@ Centimeters: 11.5 x 1.5 x 17</p>;
       setTenValue(`${invoice?.ShipMethodRef?.name ?? ""} ${invoice?.Others?.TrackingNum ?? ""}`);
     }
     console.log({ twelveValue });
-  }, [invoice, twelveValue])
+  }, [invoice, twelveValue]);
+
+  const getFilteredLineItems = (line: ExtendedLineItem[]): ExtendedLineItem[] => {
+    return line?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType) && item?.SalesItemLineDetail?.ItemRef.value !== "SHIPPING_ITEM_ID" && !item.SalesItemLineDetail?.ItemRef?.name?.includes('Stripe') && !item.GroupLineDetail?.GroupItemRef?.name.includes('Stripe') && !item?.hidden)
+    
+    //?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType))
+  }
 
   if (!invoice) return null;
 
@@ -339,9 +345,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
           </tr>
         </thead>
         <tbody>
-          {invoiceLine
-            ?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType) && item?.SalesItemLineDetail?.ItemRef.value !== "SHIPPING_ITEM_ID" && !item.SalesItemLineDetail?.ItemRef?.name?.includes('Stripe') && !item.GroupLineDetail?.GroupItemRef?.name.includes('Stripe') && !item?.hidden)
-            ?.map((item, index) => {
+          {getFilteredLineItems(invoiceLine)?.map((item, index) => {
               const itemDescription = item.DetailType === 'GroupLineDetail' ? item.GroupLineDetail?.GroupItemRef?.name :
               item.DetailType === 'DiscountLineDetail' ? item?.DiscountLineDetail?.DiscountAccountRef?.name : 
             item.SalesItemLineDetail?.ItemRef.name;
@@ -366,8 +370,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
           })}
           <tr>
             <th>Total Packages</th>
-            <th style={{textAlign: "center"}}>{invoiceLine
-            ?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType)).reduce((acc, item) => {
+            <th style={{textAlign: "center"}}>{getFilteredLineItems(invoiceLine).reduce((acc, item) => {
               const actualQty = item.GroupLineDetail?.Quantity ?? item.SalesItemLineDetail?.Qty;
               return acc + Number(actualQty ?? 0);
               }, 0)}</th>
