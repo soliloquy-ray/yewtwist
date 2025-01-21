@@ -167,7 +167,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
       return 5.50 * Number(actualPkg);
     } else if (item.includes("box")) {
       return 0.50 * Number(actualPkg);
-    } else return 0.05 * Number(actualQty);
+    } else return 0.01 * Number(actualQty);
   }
 
   const getTotalWeight = (lineItems: ExtendedLineItem[]): number => {
