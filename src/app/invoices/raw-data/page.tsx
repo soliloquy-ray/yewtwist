@@ -10,6 +10,7 @@ import { fetchInvoices, /* searchCustomers */ } from '@/lib/quickbooks-api';
 import PageWithNav from '@/app/components/PageWithNav';
 import { downloadExcel, processInvoicesForExcel } from '@/app/utils/excel';
 import dayjs from 'dayjs';
+import CheckoutButton from '@/app/components/CheckoutButton';
 
 const { RangePicker } = DatePicker;
 const { Panel } = Collapse;
@@ -307,6 +308,23 @@ export default function InvoiceDetailsPage() {
          size="small">
           International Shipment
          </Button>
+         <CheckoutButton items={invoice.Line
+              .filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType))
+              .map((item) => {
+                let productName = item.SalesItemLineDetail?.ItemRef.name;
+                if (item.DetailType === 'GroupLineDetail') productName = item.GroupLineDetail?.GroupItemRef?.name;
+                if (item.DetailType === 'DiscountLineDetail') productName = item?.DiscountLineDetail?.DiscountAccountRef?.name;
+                const qty = item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.Qty ?? item.SalesItemLineDetail?.Qty;
+                const price = item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.UnitPrice ?? item.SalesItemLineDetail?.UnitPrice;
+                const currency = invoice.CurrencyRef.value;
+                return {
+                  amount: price ?? 0,
+                  currency,
+                  name: productName ?? "",
+                  description: productName ?? "",
+                  quantity: qty ?? 0
+                }
+              })} email={invoice?.BillEmail.Address ?? ""}/>
          </>
       ),
     }
