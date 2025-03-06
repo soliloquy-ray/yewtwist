@@ -321,7 +321,7 @@ export default function InvoiceDetailsPage() {
                 amount: price ?? 0,
                 currency,
                 name: productName ?? "shipping",
-                description: productName ?? "",
+                description: productName ?? "shipping",
                 quantity: qty ?? 0
               };
             })} email={invoice?.BillEmail.Address ?? ""} invoiceId={invoice.DocNumber}/>

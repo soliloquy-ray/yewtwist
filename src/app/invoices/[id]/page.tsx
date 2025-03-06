@@ -347,8 +347,8 @@ Centimeters: 11.5 x 1.5 x 17</p>;
                 <td style={{textAlign: "center"}}>{itemDescription?.toLocaleLowerCase().includes("orange") ? "240704" : "240203"}</td>
                 <td style={{textAlign: "center"}}>{actualQty}</td>
                 <td style={{textAlign: "center"}}>{ item.DetailType === 'DiscountLineDetail' ? 'Percent' : 'Unit' }</td>
-                <td style={{textAlign: "center"}}>{getWeightFromLine(itemDescription?.toLocaleLowerCase() ?? "", actualPkg!, actualQty!)}</td>
-                <td style={{textAlign: "right"}}>${Number(actualPrice?.toFixed(2)).toLocaleString()}</td>
+                <td style={{textAlign: "center"}}>{getWeightFromLine(itemDescription?.toLocaleLowerCase() ?? "", actualPkg!, actualQty!) ?? "N/A"}</td>
+                <td style={{textAlign: "right"}}>${Number(actualPrice?.toFixed(2)).toLocaleString() ?? "N/A"}</td>
                 <td style={{textAlign: "right"}}>${Number(actualAmount.toFixed(2)).toLocaleString()}</td>
               </tr>
           })}
