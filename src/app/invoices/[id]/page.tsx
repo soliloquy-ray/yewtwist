@@ -199,7 +199,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
   }, [invoice, twelveValue]);
 
   const getFilteredLineItems = (line: ExtendedLineItem[]): ExtendedLineItem[] => {
-    return line?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType) && item?.SalesItemLineDetail?.ItemRef.value !== "SHIPPING_ITEM_ID" && !item.SalesItemLineDetail?.ItemRef?.name?.includes('Stripe') && !item.GroupLineDetail?.GroupItemRef?.name.includes('Stripe') && !item?.hidden)
+    return line?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType) && /* item?.SalesItemLineDetail?.ItemRef.value !== "SHIPPING_ITEM_ID" && */ !item.SalesItemLineDetail?.ItemRef?.name?.includes('Stripe') && !item.GroupLineDetail?.GroupItemRef?.name.includes('Stripe') && !item?.hidden)
     
     //?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType))
   }
@@ -251,14 +251,6 @@ Centimeters: 11.5 x 1.5 x 17</p>;
               <ExtendedInput value={fourValue} onChange={(v) => setFourValue(v.target.value)} style={{fontSize: 10, padding: 0, border: fourValue === "" ? "1px solid red" : ""}} bordered={false} />
               {Object.values(invoice?.BillAddr ?? {}).filter((bData) => bData !== "").map((billData, index) => <p key={index}>{billData}</p>)}
               {invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue} 
-             {/*  {invoice?.CustomerRef?.name}<br />
-              {invoice?.BillAddr?.Line1 !== invoice.CustomerRef.name && invoice.BillAddr?.Line1 && <span>{invoice?.BillAddr?.Line1}<br/></span>}
-              {invoice?.BillAddr?.City && <span>{invoice?.BillAddr?.City}<br/></span>}
-              {invoice?.BillAddr?.Country && <span>{invoice?.BillAddr?.Country}<br/></span>}
-              {invoice?.BillAddr?.Line2 !== invoice.BillAddr?.City && invoice?.BillAddr?.Line2 !== invoice.CustomerRef.name && invoice.BillAddr?.Line2 && <span>{invoice?.BillAddr?.Line2}<br/></span>}
-              {invoice?.BillAddr?.Line3 !== invoice.BillAddr?.Country && invoice?.BillAddr?.Line3 !== invoice.CustomerRef.name && invoice.BillAddr?.Line3 && <span>{invoice?.BillAddr?.Line3}<br/></span>}
-              {invoice?.BillAddr?.Line4 && <span>{invoice?.BillAddr?.Line4}<br/></span>}
-              {invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue} */}
             </td>
           </tr>
         </tbody>
@@ -279,15 +271,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
             <td colSpan={2} rowSpan={3}>
               <ExtendedInput value={nineValue} onChange={(v: any) => setNineValue(v.target.value)} style={{fontSize: 10, padding: 0,border: nineValue === "" ? "1px solid red" : ""}} bordered={false} />
               {Object.values(invoice?.ShipAddr ?? {}).filter((sData) => sData !== "").map((shipData, index) => <p key={index}>{shipData}</p>)}
-              {invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue}
-            {/* {invoice?.CustomerRef?.name}<br />
-              {invoice?.ShipAddr?.Line1 !== invoice.CustomerRef.name && invoice.ShipAddr?.Line1 && <span>{invoice?.ShipAddr?.Line1}<br/></span>}
-              {invoice?.ShipAddr?.City && <span>{invoice?.ShipAddr?.City}<br/></span>}
-              {invoice?.ShipAddr?.Country && <span>{invoice?.ShipAddr?.Country}<br/></span>}
-              {invoice?.ShipAddr?.Line2 !== invoice.ShipAddr?.City && invoice?.ShipAddr?.Line2 !== invoice.CustomerRef.name && invoice.ShipAddr?.Line2 && <span>{invoice?.ShipAddr?.Line2}<br/></span>}
-              {invoice?.ShipAddr?.Line3 !== invoice.ShipAddr?.Country && invoice?.ShipAddr?.Line3 !== invoice.CustomerRef.name && invoice.ShipAddr?.Line3 && <span>{invoice?.ShipAddr?.Line3}<br/></span>}
-              {invoice?.ShipAddr?.Line4 && <span>{invoice?.ShipAddr?.Line4}<br/></span>}
-              {invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue}    */}           
+              {invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue}     
              </td>
           </tr>
           <tr>
@@ -380,10 +364,10 @@ Centimeters: 11.5 x 1.5 x 17</p>;
             <th style={{textAlign: "center"}}>Total Invoice</th>
             <th style={{textAlign: "right"}}>${Number(twelveValue) === 1 ? 3.5 * invoiceLine
             ?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType)).reduce((acc, item) => {
-              const actualQty = item.GroupLineDetail?.Quantity ?? item.SalesItemLineDetail?.Qty;
+              const actualQty = item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.Qty ?? item.SalesItemLineDetail?.Qty;
               return acc + Number(actualQty ?? 0);
               }, 0) : Number(invoiceLine
-            ?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType) && item?.SalesItemLineDetail?.ItemRef.value !== "SHIPPING_ITEM_ID" && !item.SalesItemLineDetail?.ItemRef?.name?.includes('Stripe') && !item.GroupLineDetail?.GroupItemRef?.name.includes('Stripe')).reduce((acc, sum) => acc + sum.Amount, 0).toFixed(2)).toLocaleString()}</th>
+            ?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType) /* && item?.SalesItemLineDetail?.ItemRef.value !== "SHIPPING_ITEM_ID" */ && !item.SalesItemLineDetail?.ItemRef?.name?.includes('Stripe') && !item.GroupLineDetail?.GroupItemRef?.name.includes('Stripe')).reduce((acc, sum) => acc + sum.Amount, 0).toFixed(2)).toLocaleString()}</th>
           </tr>
           <tr>
             <th colSpan={10} style={{textAlign: "center"}}>Gripping Device- non medical device</th>

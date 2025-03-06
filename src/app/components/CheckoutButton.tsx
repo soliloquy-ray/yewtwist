@@ -5,8 +5,8 @@ import { LineItemInput } from '../api/stripe/route';
 import { Badge, Row } from 'antd';
 
 export default function CheckoutButton({
-  items, email
-}: {items: LineItemInput[], email: string}) {
+  items, email, invoiceId
+}: { items: LineItemInput[], email: string, invoiceId: string }) {
   const [loading, setLoading] = useState(false);
   const [payLink, setPayLink] = useState("");
   const [hasError, setHasError] = useState(false);
@@ -18,7 +18,8 @@ export default function CheckoutButton({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items
+          items,
+          invoiceId
         })
       });
       if (response.status === 500) setHasError(true);

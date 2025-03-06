@@ -43,7 +43,7 @@ async function getOrCreatePrice(item: LineItemInput) {
 
 export async function POST(req: Request) {
   try {
-    const { items } = await req.json();
+    const { items, invoiceId } = await req.json();
     
     // Convert each line item to a price ID
     const lineItems = await Promise.all(
@@ -58,6 +58,10 @@ export async function POST(req: Request) {
     
     const paymentLink = await stripe.paymentLinks.create({
       line_items: lineItems,
+      metadata: {
+        description: `Payment for invoice #${invoiceId}`,
+        invoice_id: invoiceId
+      },
     });
 
     return NextResponse.json({ url: paymentLink.url });
