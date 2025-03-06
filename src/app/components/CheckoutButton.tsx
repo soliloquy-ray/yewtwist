@@ -5,8 +5,8 @@ import { LineItemInput } from '../api/stripe/route';
 import { Badge, Row } from 'antd';
 
 export default function CheckoutButton({
-  items, email, invoiceId
-}: { items: LineItemInput[], email: string, invoiceId: string }) {
+  items, email, invoiceId, chargeShipping
+}: { items: LineItemInput[], email: string, invoiceId: string, chargeShipping: boolean }) {
   const [loading, setLoading] = useState(false);
   const [payLink, setPayLink] = useState("");
   const [hasError, setHasError] = useState(false);
@@ -38,7 +38,7 @@ export default function CheckoutButton({
     disabled={loading}
     className="bg-blue-500 text-white px-4 py-2 rounded"
   >
-    {loading ? 'Processing...' : 'Generate Link'}
+    {loading ? 'Processing...' : `${chargeShipping ? "Generate Link (charge shipping)" : "Generate Link"}`}
   </button>;
 
   return <Badge style={{margin: 5}} onClick={() => {

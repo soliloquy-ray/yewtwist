@@ -318,13 +318,32 @@ export default function InvoiceDetailsPage() {
               const price = item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.UnitPrice ?? item.SalesItemLineDetail?.UnitPrice;
               const currency = invoice.CurrencyRef.value;
               return {
-                amount: price ?? 0,
+                amount: price ?? item.Amount,
                 currency,
                 name: productName ?? "shipping",
                 description: productName ?? "shipping",
-                quantity: qty ?? 0
+                quantity: qty ?? 1
               };
-            })} email={invoice?.BillEmail.Address ?? ""} invoiceId={invoice.DocNumber}/>
+            })} email={invoice?.BillEmail.Address ?? ""} invoiceId={invoice.DocNumber} chargeShipping={true}/>
+            
+         <CheckoutButton items={invoice.Line
+            .filter(item => ['SalesItemLineDetail', 'GroupLineDetail', 'DiscountLineDetail'].includes(item.DetailType))
+            .filter(item => item.SalesItemLineDetail?.ItemRef.value !== "SHIPPING_ITEM_ID")
+            .map((item) => {
+              let productName = item.SalesItemLineDetail?.ItemRef.name;
+              if (item.DetailType === 'GroupLineDetail') productName = item.GroupLineDetail?.GroupItemRef?.name;
+              if (item.DetailType === 'DiscountLineDetail') productName = item?.DiscountLineDetail?.DiscountAccountRef?.name;
+              const qty = item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.Qty ?? item.SalesItemLineDetail?.Qty;
+              const price = item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.UnitPrice ?? item.SalesItemLineDetail?.UnitPrice;
+              const currency = invoice.CurrencyRef.value;
+              return {
+                amount: price ?? item.Amount,
+                currency,
+                name: productName ?? "shipping",
+                description: productName ?? "shipping",
+                quantity: qty ?? 1
+              };
+            })} email={invoice?.BillEmail.Address ?? ""} invoiceId={invoice.DocNumber} chargeShipping={false}/>
          </>
       ),
     }

@@ -167,7 +167,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
       return 5.50 * Number(actualPkg);
     } else if (item.includes("box")) {
       return 0.50 * Number(actualPkg);
-    } else return 0.01 * Number(actualQty);
+    } else return 0.05 * Number(actualQty);
   }
 
   const getTotalWeight = (lineItems: ExtendedLineItem[]): number => {
@@ -337,6 +337,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
             const actualPkg = item.GroupLineDetail?.Quantity ?? item.SalesItemLineDetail?.Qty;
             const actualPrice = Number(twelveValue) === 1 ? 3.5 : item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.UnitPrice ?? item.SalesItemLineDetail?.UnitPrice;
             const actualAmount = Number(twelveValue) === 1 ? Number(actualPrice) * Number(actualQty) : item.Amount;
+            const actualWeight = getWeightFromLine(itemDescription?.toLocaleLowerCase() ?? "", actualPkg!, actualQty!);
               return <tr key={index} style={{cursor: 'pointer'}} onClick={() => setInvoiceLine((pv) => [...pv.filter((lineItem) => lineItem.Id !== item.Id)])}>
                 <td>{
                   getProductCodeFromDesc(itemDescription?.toLocaleLowerCase() ?? "")
@@ -347,8 +348,8 @@ Centimeters: 11.5 x 1.5 x 17</p>;
                 <td style={{textAlign: "center"}}>{itemDescription?.toLocaleLowerCase().includes("orange") ? "240704" : "240203"}</td>
                 <td style={{textAlign: "center"}}>{actualQty}</td>
                 <td style={{textAlign: "center"}}>{ item.DetailType === 'DiscountLineDetail' ? 'Percent' : 'Unit' }</td>
-                <td style={{textAlign: "center"}}>{getWeightFromLine(itemDescription?.toLocaleLowerCase() ?? "", actualPkg!, actualQty!) ?? "N/A"}</td>
-                <td style={{textAlign: "right"}}>${Number(actualPrice?.toFixed(2)).toLocaleString() ?? "N/A"}</td>
+                <td style={{textAlign: "center"}}>{ isNaN(actualWeight) ? "N/A" : actualWeight }</td>
+                <td style={{textAlign: "right"}}>${isNaN(Number(actualPrice)) ? "N/A" : Number(actualPrice?.toFixed(2)).toLocaleString()}</td>
                 <td style={{textAlign: "right"}}>${Number(actualAmount.toFixed(2)).toLocaleString()}</td>
               </tr>
           })}
