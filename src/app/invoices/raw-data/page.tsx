@@ -324,7 +324,7 @@ export default function InvoiceDetailsPage() {
                 description: productName ?? "Shipping Fee",
                 quantity: qty ?? 1
               };
-            })} email={invoice?.BillEmail.Address ?? ""} invoiceId={invoice.DocNumber} chargeShipping={true}/>
+            })} email={invoice?.BillEmail.Address ?? ""} invoiceId={invoice.DocNumber} chargeShipping={true} company={invoice.CustomerRef.name}/>
             
          <CheckoutButton items={invoice.Line
             .filter(item => ['SalesItemLineDetail', 'GroupLineDetail', 'DiscountLineDetail'].includes(item.DetailType))
@@ -343,7 +343,7 @@ export default function InvoiceDetailsPage() {
                 description: productName ?? "shipping",
                 quantity: qty ?? 1
               };
-            })} email={invoice?.BillEmail.Address ?? ""} invoiceId={invoice.DocNumber} chargeShipping={false}/>
+            })} email={invoice?.BillEmail.Address ?? ""} invoiceId={invoice.DocNumber} chargeShipping={false} company={invoice.CustomerRef.name}/>
          </>
       ),
     }

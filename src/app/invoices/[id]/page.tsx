@@ -349,7 +349,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
                 <td style={{textAlign: "center"}}>{actualQty}</td>
                 <td style={{textAlign: "center"}}>{ item.DetailType === 'DiscountLineDetail' ? 'Percent' : 'Unit' }</td>
                 <td style={{textAlign: "center"}}>{ isNaN(actualWeight) ? "N/A" : actualWeight }</td>
-                <td style={{textAlign: "right"}}>${isNaN(Number(actualPrice)) ? "N/A" : Number(actualPrice?.toFixed(2)).toLocaleString()}</td>
+                <td style={{textAlign: "right"}}>{isNaN(Number(actualPrice)) ? "N/A" : `$${Number(actualPrice?.toFixed(2)).toLocaleString()}`}</td>
                 <td style={{textAlign: "right"}}>${Number(actualAmount.toFixed(2)).toLocaleString()}</td>
               </tr>
           })}

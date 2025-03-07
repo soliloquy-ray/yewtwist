@@ -43,7 +43,7 @@ async function getOrCreatePrice(item: LineItemInput) {
 
 export async function POST(req: Request) {
   try {
-    const { items, invoiceId } = await req.json();
+    const { items, invoiceId, company } = await req.json();
     
     // Convert each line item to a price ID
     const lineItems = await Promise.all(
@@ -67,16 +67,21 @@ export async function POST(req: Request) {
       },
       custom_text: {
         submit: {
-          message: "Pay Yewtwist"
+          message: `Yewtwist Purchase by ${company}`
         },
       },
       custom_fields: [{
-        key: "company",
-        type: 'text',
+        key: "Customer",
+        type: 'dropdown',
         label: {
           type: 'custom',
-          custom: 'company'
+          custom: 'Customer'
         },
+        dropdown: {
+          options: [
+            {label: company, value: company}
+          ]
+        }
       }]
     });
 
