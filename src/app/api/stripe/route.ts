@@ -62,6 +62,22 @@ export async function POST(req: Request) {
         description: `Payment for invoice #${invoiceId}`,
         invoice_id: invoiceId
       },
+      payment_intent_data: {
+        statement_descriptor: "Test"
+      },
+      custom_text: {
+        submit: {
+          message: "Pay Yewtwist"
+        },
+      },
+      custom_fields: [{
+        key: "company",
+        type: 'text',
+        label: {
+          type: 'custom',
+          custom: 'company'
+        },
+      }]
     });
 
     return NextResponse.json({ url: paymentLink.url });

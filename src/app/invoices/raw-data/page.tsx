@@ -320,8 +320,8 @@ export default function InvoiceDetailsPage() {
               return {
                 amount: price ?? item.Amount,
                 currency,
-                name: productName ?? "shipping",
-                description: productName ?? "shipping",
+                name: productName ?? "Shipping",
+                description: productName ?? "Shipping Fee",
                 quantity: qty ?? 1
               };
             })} email={invoice?.BillEmail.Address ?? ""} invoiceId={invoice.DocNumber} chargeShipping={true}/>
