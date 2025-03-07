@@ -79,7 +79,7 @@ export async function POST(req: Request) {
         },
         dropdown: {
           options: [
-            {label: company, value: company}
+            {label: company, value: company.replace(/[^0-9A-Za-z]/g,'')}
           ]
         }
       }]
