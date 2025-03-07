@@ -63,7 +63,11 @@ export async function POST(req: Request) {
         invoice_id: invoiceId
       },
       payment_intent_data: {
-        statement_descriptor: "Test"
+        statement_descriptor: invoiceId,
+        description: `Payment for invoice #${invoiceId}`,
+        metadata: {
+          p: `Payment for invoice #${invoiceId}`,
+        }
       },
       custom_text: {
         submit: {
