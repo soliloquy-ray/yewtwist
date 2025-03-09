@@ -59,14 +59,14 @@ export async function POST(req: Request) {
     const paymentLink = await stripe.paymentLinks.create({
       line_items: lineItems,
       metadata: {
-        description: `Payment for invoice #${invoiceId}`,
+        description: `Yewtwist - Client ${invoiceId}`,
         invoice_id: invoiceId
       },
       payment_intent_data: {
         statement_descriptor: invoiceId,
-        description: `Payment for invoice #${invoiceId}`,
+        description: `Yewtwist - Client ${invoiceId}`,
         metadata: {
-          p: `Payment for invoice #${invoiceId}`,
+          p: `Yewtwist - Client ${invoiceId}`,
         }
       },
       custom_text: {
