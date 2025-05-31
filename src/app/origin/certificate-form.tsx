@@ -1,23 +1,82 @@
 "use client"
 
-import { Button, Checkbox, Input } from "antd"
+import { Button, Checkbox, Input, Select, Image } from "antd"
 import { useEffect, useState } from "react"
 import styled from "styled-components";
+
+interface ProducerDetails {
+  companyName: string;
+  importerName: string;
+  address: string;
+  contactNumber: string;
+  email: string;
+  taxIdNumber: string;
+}
+
+const ProducerDetails: ProducerDetails[] = [{
+  companyName: "Alamo Scientific, Inc",
+  importerName: "FedEx  Ground # 627462008",
+  address: "7431 Reindeer Trail #2, San Antonio, TX 78238",
+  contactNumber: "210-543-1300",
+  email: "sales@alamoscientific.com",
+  taxIdNumber: "20-1408943"
+},
+{
+  companyName:  "Clinical Technology, Inc.",
+  importerName: "Clinical Technology, Inc.",
+  address: "7005 S. Edgerton Rd.  Brecksville, OH 44141",
+  contactNumber: "440/526-0160",
+  email:  "info@clinical-tech.com",
+  taxIdNumber:  "34-1293451",
+},{
+  companyName: "New England Medical Specialties, Inc",
+  importerName: "New England Medical Specialties, Inc",
+  address: "21B Commerce Drive North Branford Ct 06471",
+  contactNumber: "860-877-2226",
+  email: "Kath@nemsct.com",
+  taxIdNumber: "86-1093521"
+}
+]
 
 const AdjustedInput = styled(Input)`
   border: 0;
   width: fit-content;
+  background: transparent;
+  z-index: 0;
 `;
 const Ndiv = styled.div`
-  display: block;
-  padding: 8px;
+  display: flex;
+  padding: 2px 8px;
+  justify-content: flex-start;
+  align-items: center;
   label {
     display: inline;
+    flex: 0 0 auto;
+    line-height: 13px;
+  font-size: 13px;
+  }
+  .ant-select{
+    flex: 1;
   }
   .ant-input {
+  font-size: 13px;
     display: inline;
+    padding: 0 8px;
+    line-height: 13px;
+    flex: 1;
     // width: fit-content;
   }
+`;
+
+const Container = styled.div`
+display: block;
+
+    @media print {
+      -webkit-print-color-adjust: exact;
+      .no-print {
+        display: none;
+      }
+    }
 `
 
 interface ExtendedLineItem extends LineItem {
@@ -48,22 +107,22 @@ export default function CertificateForm(invoice: Invoice) {
   // Section 4 - Producer Details
   const [variousProducers, setVariousProducers] = useState(false)
   const [availableUponRequest, setAvailableUponRequest] = useState(false)
-  const [producerCompanyName, setProducerCompanyName] = useState("")
-  const [producerName, setProducerName] = useState("")
-  const [producerAddress, setProducerAddress] = useState("")
-  const [producerTelephone, setProducerTelephone] = useState("")
-  const [producerEmail, setProducerEmail] = useState("")
-  const [producerTaxId, setProducerTaxId] = useState("")
+  const [producerCompanyName, setProducerCompanyName] = useState("Optimoule")
+  const [producerName, setProducerName] = useState("Antoine Michaud")
+  const [producerAddress, setProducerAddress] = useState("275 Monfette East, Thetford Mines, Quebec, Canada G6G7H4")
+  const [producerTelephone, setProducerTelephone] = useState("418-338-6106")
+  const [producerEmail, setProducerEmail] = useState("amichaud@optimoule.com")
+  const [producerTaxId, setProducerTaxId] = useState("721730000AER2354469")
 
   // Section 5 - Importer Details
   const [unknown, setUnknown] = useState(false)
   const [variousImporters, setVariousImporters] = useState(false)
-  const [importerCompanyName, setImporterCompanyName] = useState("Optimoule")
-  const [importerName, setImporterName] = useState("Antoine Michaud")
-  const [importerAddress, setImporterAddress] = useState("275 Monfette East, Thetford Mines, Quebec, Canada G6G7H4")
-  const [importerTelephone, setImporterTelephone] = useState("418-338-6106")
-  const [importerEmail, setImporterEmail] = useState("amichaud@optimoule.com")
-  const [importerTaxId, setImporterTaxId] = useState("721730000AER2354469")
+  const [importerCompanyName, setImporterCompanyName] = useState("")
+  const [importerName, setImporterName] = useState("")
+  const [importerAddress, setImporterAddress] = useState("")
+  const [importerTelephone, setImporterTelephone] = useState("")
+  const [importerEmail, setImporterEmail] = useState("")
+  const [importerTaxId, setImporterTaxId] = useState("")
 
   // Section 6-9 - Goods Table
   const [hsTariff1] = useState("9018.9080")
@@ -77,6 +136,25 @@ export default function CertificateForm(invoice: Invoice) {
   // Signature
   const [responsibleOfficial, setResponsibleOfficial] = useState("")
   const [signatureDate, setSignatureDate] = useState("")
+
+  const handleChangeProducer = (tax: string) => {
+    const targetDataset = ProducerDetails.find((p) => p.taxIdNumber.toLocaleLowerCase() === tax.toLocaleLowerCase());
+    if (targetDataset) {
+     /*  setProducerCompanyName(targetDataset.companyName);
+      setProducerAddress(targetDataset.address);
+      setProducerName(targetDataset.importerName);
+      setProducerTelephone(targetDataset.contactNumber);
+      setProducerEmail(targetDataset.email);
+      setProducerTaxId(targetDataset.taxIdNumber); */
+
+      setImporterCompanyName(targetDataset.companyName);
+      setImporterName(targetDataset.importerName);
+      setImporterAddress(targetDataset.address);
+      setImporterTelephone(targetDataset.contactNumber);
+      setImporterEmail(targetDataset.email);
+      setImporterTaxId(targetDataset.taxIdNumber);
+    }
+  }
   
   
       useEffect(() => {
@@ -98,9 +176,10 @@ export default function CertificateForm(invoice: Invoice) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-8 bg-white">
+    <Container className="max-w-4xl mx-auto p-8 bg-white">
       <div>
         {/* Header */}
+        <Image alt="yewtwist logo" height={50} style={{objectFit: "contain"}} src={"/Yewtwist-logo.png"}/>
         <div className="text-center py-4 ">
           <h1 className="text-xl font-bold">Certification of Origin</h1>
           <h2 className="text-lg font-bold">(USMCA/T-MEC/CUSMA)</h2>
@@ -110,7 +189,7 @@ export default function CertificateForm(invoice: Invoice) {
           {/* Section 1 - Certifier */}
           <div className="mb-4 border-1 border-black">
             <div className="flex items-center gap-4 mb-2">
-              <span className="font-bold bg-[var(--origin-green)] !pt-1 !pb-2 !px-1">1. CERTIFIER:</span>
+              <span className="font-bold bg-[var(--origin-green)] !pt-1 !pb-2 !px-1" style={{backgroundColor: "#92d050"}}>1. CERTIFIER:</span>
               <div className="flex items-center gap-2">
                 <Checkbox
                   checked={certifierType === "importer"}
@@ -138,8 +217,8 @@ export default function CertificateForm(invoice: Invoice) {
           {/* Sections 2 & 3 - Side by side */}
           <div className="grid grid-cols-2 mb-4">
             {/* Section 2 - Certifier Details */}
-            <div className="border border-black p-3">
-              <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1">2. CERTIFIER DETAILS</h3>
+            <div className="border p-3">
+              <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1" style={{backgroundColor: "#92d050"}}>2. CERTIFIER DETAILS</h3>
               <div className="space-y-2">
                 <Ndiv>
                   <label className="text-sm font-medium">Company Name:</label>
@@ -193,8 +272,8 @@ export default function CertificateForm(invoice: Invoice) {
             </div>
 
             {/* Section 3 - Exporter Details */}
-            <div className="border border-black p-3">
-              <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1">3. EXPORTER&apos;S DETAILS (If different than the certifier)</h3>
+            <div className="border p-3">
+              <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1" style={{backgroundColor: "#92d050"}}>3. EXPORTER&apos;S DETAILS (If different than the certifier)</h3>
               <div className="space-y-2">
                 <Ndiv>
                   <label className="text-sm font-medium">Company Name:</label>
@@ -251,8 +330,8 @@ export default function CertificateForm(invoice: Invoice) {
           {/* Section 4 - Producer Details */}
           <div className="grid grid-cols-2 mb-4">
           <div className="border border-black p-3 mb-4">
-            <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1 h-8">4. PRODUCER&apos;S DETAILS <p className="text-xs inline">(If different than the certifier or exporter)</p></h3>
-            <div className="flex items-center gap-6 mb-3 bg-[var(--origin-green)] h-20 justify-center">
+            <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1 h-8" style={{backgroundColor: "#92d050"}}>4. PRODUCER&apos;S DETAILS <p className="text-xs inline">(If different than the certifier or exporter)</p></h3>
+            <div className="flex items-center gap-6 mb-3 bg-[var(--origin-green)] h-20 justify-center" style={{backgroundColor: "#92d050"}}>
               <div className="flex items-center gap-2">
                 <Checkbox
                   checked={variousProducers}
@@ -268,7 +347,7 @@ export default function CertificateForm(invoice: Invoice) {
                 <span className="text-sm">Available upon request by <br/> the importing authorities</span>
               </div>
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
               {/* <div className="space-y-2"> */}
                 <Ndiv>
                   <label className="text-sm font-medium">Company Name:</label>
@@ -326,8 +405,8 @@ export default function CertificateForm(invoice: Invoice) {
 
           {/* Section 5 - Importer Details */}
           <div className="border border-black p-3 mb-4">
-            <h3 className="font-bold mb-3 bg-[var(--origin-green)] h-8">5. IMPORTER&apos;S DETAILS (If different than the certifier)</h3>
-            <div className="flex items-center gap-6 mb-3 bg-[var(--origin-green)] h-20 justify-center">
+            <h3 className="font-bold mb-3 bg-[var(--origin-green)] h-8" style={{backgroundColor: "#92d050"}}>5. IMPORTER&apos;S DETAILS (If different than the certifier)</h3>
+            <div className="flex items-center gap-6 mb-3 bg-[var(--origin-green)] h-20 justify-center" style={{backgroundColor: "#92d050"}}>
               <div className="flex items-center gap-2">
                 <Checkbox checked={unknown} onChange={(checked) => setUnknown(checked.target.checked)} />
                 <span className="text-sm">Unknown</span>
@@ -340,15 +419,16 @@ export default function CertificateForm(invoice: Invoice) {
                 <span className="text-sm">Various Importers</span>
               </div>
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
               {/* <div className="space-y-2"> */}
                 <Ndiv>
                   <label className="text-sm font-medium">Company Name:</label>
-                  <AdjustedInput
-                    value={importerCompanyName}
-                    onChange={(e) => setImporterCompanyName(e.target.value)}
-                    className="border-0 border-b border-gray-400 rounded-none px-1 py-0 h-6 text-sm"
-                  />
+                  
+                  <Select variant="borderless" value={importerCompanyName} onChange={(val) => handleChangeProducer(val)}>
+                    {
+                      ProducerDetails.map((prod) => (<Select.Option key={prod.taxIdNumber}>{prod.companyName}</Select.Option>))
+                    }
+                  </Select>
                 </Ndiv>
                 <Ndiv>
                   <label className="text-sm font-medium">Name:</label>
@@ -399,15 +479,15 @@ export default function CertificateForm(invoice: Invoice) {
 
           {/* Sections 6-9 - Goods Table */}
           <div className="border border-black mb-4">
-            <table className="w-full">
+            <table className="w-full" style={{tableLayout: "fixed"}}>
               <thead>
-                <tr className="border-b border-black bg-[var(--origin-green)]">
+                <tr className="border-b border-black bg-[var(--origin-green)]" style={{backgroundColor: "#92d050"}}>
                   <th className="border-r border-black p-2 text-left text-sm font-bold" colSpan={2}>6. DESCRIPTION OF THE GOOD</th>
                   <th className="border-r border-black p-2 text-left text-sm font-bold">7. HS TARIFF CLASSIFICATION</th>
                   <th className="border-r border-black p-2 text-left text-sm font-bold">8. ORIGIN CRITERION</th>
                   <th className="p-2 text-left text-sm font-bold">9. COUNTRY OF ORIGIN</th>
                 </tr>
-                <tr className="border-b border-black bg-[var(--origin-green)]">
+                <tr className="border-b border-black bg-[var(--origin-green)]" style={{backgroundColor: "#92d050"}}>
                   <th className="border-r border-black p-2 text-left text-xs">PART / SKU NUMBER</th>
                   <th className="border-r border-black p-2 text-left text-xs">DESCRIPTION</th>
                   <th />
@@ -466,7 +546,7 @@ export default function CertificateForm(invoice: Invoice) {
 
           {/* Section 10 - Blanket Period */}
           <div className="border border-black p-3 mb-4">
-            <h3 className="font-bold mb-3 bg-[var(--origin-green)]">10. BLANKET PERIOD</h3>
+            <h3 className="font-bold mb-3 bg-[var(--origin-green)]" style={{backgroundColor: "#92d050"}}>10. BLANKET PERIOD</h3>
             <div className="flex items-center gap-2 text-sm !p-2">
               <span>Period covered by certification (if applicable) is up to 12 months from</span>
               <AdjustedInput
@@ -522,7 +602,7 @@ export default function CertificateForm(invoice: Invoice) {
         </div>
       </div>
 
-      <div className="mt-8 flex gap-4">
+      <div className="mt-8 flex gap-4 no-print">
         <Button onClick={() => window.print()} className="bg-blue-600 hover:bg-blue-700">
           Print Form
         </Button>
@@ -555,6 +635,6 @@ export default function CertificateForm(invoice: Invoice) {
           Save Data
         </Button>
       </div>
-    </div>
+    </Container>
   )
 }

@@ -308,6 +308,12 @@ export default function InvoiceDetailsPage() {
          size="small">
           International Shipment
          </Button>
+        <Button
+         href={`/origin/${invoice.DocNumber}`}
+        target='_blank'
+         size="small">
+          Certificate of Origin
+         </Button>
          <CheckoutButton items={invoice.Line
             .filter(item => ['SalesItemLineDetail', 'GroupLineDetail', 'DiscountLineDetail'].includes(item.DetailType))
             .map((item) => {
