@@ -35,6 +35,13 @@ const ProducerDetails: ProducerDetails[] = [{
   contactNumber: "860-877-2226",
   email: "Kath@nemsct.com",
   taxIdNumber: "86-1093521"
+},{
+  companyName: "CHS USA Inc.",
+  importerName: "CHS USA Inc.",
+  address: "200 Kelly Drive, Suite A, Peachtree City, GA, 30269",
+  contactNumber: "1-888-986-2485",
+  email: "us-customercare@chsltd.com",
+  taxIdNumber: "26-0420039"
 }
 ]
 
@@ -126,7 +133,7 @@ export default function CertificateForm(invoice: Invoice) {
 
   // Section 6-9 - Goods Table
   // const [hsTariff1] = useState("9018.9080 - gripping device used for medical science")
-  const [originCriterion1, setOriginCriterion1] = useState("C")
+  const [originCriterion1, setOriginCriterion1] = useState("A")
   const [countryOrigin1, setCountryOrigin1] = useState("Canada")
 
   // Section 10 - Blanket Period
@@ -234,7 +241,7 @@ export default function CertificateForm(invoice: Invoice) {
                   <AdjustedInput
                     value={certifierAddress}
                     onChange={(e) => setCertifierAddress(e.target.value)}
-                    className="border-0 border-b border-gray-400 rounded-none px-1 py-0 h-12 text-sm resize-none"
+                    className="border-0 border-b border-gray-400 rounded-none px-1 py-0 h-6 text-sm resize-none"
                   />
                 </Ndiv>
                 <Ndiv>
@@ -289,7 +296,7 @@ export default function CertificateForm(invoice: Invoice) {
                   <AdjustedInput
                     value={exporterAddress}
                     onChange={(e) => setExporterAddress(e.target.value)}
-                    className="border-0 border-b border-gray-400 rounded-none px-1 py-0 h-12 text-sm resize-none"
+                    className="border-0 border-b border-gray-400 rounded-none px-1 py-0 h-6 text-sm resize-none"
                   />
                 </Ndiv>
                 <Ndiv>
@@ -324,20 +331,20 @@ export default function CertificateForm(invoice: Invoice) {
           <div className="grid grid-cols-2 mb-4">
           <div className="border border-black p-3 mb-4">
             <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1 h-8" style={{backgroundColor: "#92d050"}}>4. PRODUCER&apos;S DETAILS <p className="text-xs inline">(If different than the certifier or exporter)</p></h3>
-            <div className="flex items-center gap-6 mb-3 bg-[var(--origin-green)] h-20 justify-center" style={{backgroundColor: "#92d050"}}>
+            <div className="flex items-center gap-6 mb-3 bg-[var(--origin-green)] h-8 justify-center" style={{backgroundColor: "#92d050"}}>
               <div className="flex items-center gap-2">
                 <Checkbox
                   checked={variousProducers}
                   onChange={(checked) => setVariousProducers(checked.target.checked)}
                 />
-                <span className="text-sm">Various Producers</span>
+                <span className="text-xs">Various Producers</span>
               </div>
               <div className="flex items-center gap-2">
                 <Checkbox
                   checked={availableUponRequest}
                   onChange={(checked) => setAvailableUponRequest(checked.target.checked)}
                 />
-                <span className="text-sm">Available upon request by <br/> the importing authorities</span>
+                <span className="text-xs">Available upon request by <br/> the importing authorities</span>
               </div>
             </div>
             <div className="flex flex-col gap-1">
@@ -399,17 +406,17 @@ export default function CertificateForm(invoice: Invoice) {
           {/* Section 5 - Importer Details */}
           <div className="border border-black p-3 mb-4">
             <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1 h-8" style={{backgroundColor: "#92d050"}}>5. IMPORTER&apos;S DETAILS <p className="text-xs inline">(If different than the certifier)</p></h3>
-            <div className="flex items-center gap-6 mb-3 bg-[var(--origin-green)] h-20 justify-center" style={{backgroundColor: "#92d050"}}>
+            <div className="flex items-center gap-6 mb-3 bg-[var(--origin-green)] h-8 justify-center" style={{backgroundColor: "#92d050"}}>
               <div className="flex items-center gap-2">
                 <Checkbox checked={unknown} onChange={(checked) => setUnknown(checked.target.checked)} />
-                <span className="text-sm">Unknown</span>
+                <span className="text-xs">Unknown</span>
               </div>
               <div className="flex items-center gap-2">
                 <Checkbox
                   checked={variousImporters}
                   onChange={(checked) => setVariousImporters(checked.target.checked)}
                 />
-                <span className="text-sm">Various Importers</span>
+                <span className="text-xs">Various Importers</span>
               </div>
             </div>
             <div className="flex flex-col gap-1">
@@ -495,10 +502,10 @@ export default function CertificateForm(invoice: Invoice) {
           item.SalesItemLineDetail?.ItemRef.name;
             const productCode = getProductCodeFromDesc(itemDescription?.toLocaleLowerCase() ?? "");           
                 return <tr key={idx} className="border border-black" onClick={() => setInvoiceLine((pv) => [...pv.filter((lineItem) => lineItem.Id !== item.Id)])}>
-                  <td className="border p-1 text-sm">
+                  <td className="border p-1 text-xs">
                       {productCode}
                       </td>
-                      <td className="text-sm">
+                      <td className="text-xs">
                       {itemDescription}
                   </td>
                   <td className="border border-black p-1 text-xs">
@@ -509,14 +516,14 @@ export default function CertificateForm(invoice: Invoice) {
                     <AdjustedInput
                       value={originCriterion1}
                       onChange={(e) => setOriginCriterion1(e.target.value)}
-                      className="border-0 rounded-none px-1 py-0 h-6 text-sm"
+                      className="border-0 rounded-none px-1 py-0 h-6 text-xs"
                     />
                   </td>
                   <td className="p-1">
                     <AdjustedInput
                       value={countryOrigin1}
                       onChange={(e) => setCountryOrigin1(e.target.value)}
-                      className="border-0 rounded-none px-1 py-0 h-6 text-sm"
+                      className="border-0 rounded-none px-1 py-0 h-6 text-xs"
                     />
                   </td>
                 </tr>})}
@@ -568,7 +575,7 @@ export default function CertificateForm(invoice: Invoice) {
             <div className="flex items-center gap-8 mt-8">
               <div className="flex-1">
                 <label className="text-sm font-bold">CERTIFIER&apos;S SIGNATURE</label>
-                <div className="border-b border-gray-400 h-8 mt-2"></div>
+                <div className="border-b border-gray-400 h-8 mt-2"><Image src="/mariasig.png" alt="maria sig" height={40} style={{objectFit: "contain"}} /></div>
               </div>
               <div className="w-32">
                 <label className="text-sm font-bold">DATE</label>
