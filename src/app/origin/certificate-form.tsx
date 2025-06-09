@@ -273,7 +273,7 @@ export default function CertificateForm(invoice: Invoice) {
 
             {/* Section 3 - Exporter Details */}
             <div className="border p-3">
-              <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1" style={{backgroundColor: "#92d050"}}>3. EXPORTER&apos;S DETAILS (If different than the certifier)</h3>
+              <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1" style={{backgroundColor: "#92d050"}}>3. EXPORTER&apos;S DETAILS <small>(If different than the certifier)</small></h3>
               <div className="space-y-2">
                 <Ndiv>
                   <label className="text-sm font-medium">Company Name:</label>
@@ -561,7 +561,7 @@ export default function CertificateForm(invoice: Invoice) {
 
           {/* Certification Text and Signature */}
           <div className="space-y-4">
-            <p className="text-sm leading-relaxed">
+            <p className="text-xs leading-relaxed">
               I certify that the goods described in this document qualify as originating and the information contained
               in this document is true and accurate. I assume responsibility for proving such representations and agree
               to maintain and present upon request, or to make available during a verification visit, documentation
@@ -569,7 +569,7 @@ export default function CertificateForm(invoice: Invoice) {
             </p>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">
+              <label className="text-xs font-medium">
                 Name of Responsible Official of Company or Authorized Agent if the invoice certified on behalf of a
                 company or individual:
               </label>
