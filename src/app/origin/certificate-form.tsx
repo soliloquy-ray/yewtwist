@@ -518,11 +518,7 @@ export default function CertificateForm(invoice: Invoice) {
                       {itemDescription}
                   </td>
                   <td className="border border-black p-1">
-                    <AdjustedInput
-                      value={hsTariff1}
-                      // onChange={(e) => setHsTariff1(e.target.value)}
-                      className="border-o rounded-none px-1 py-0 h-6 text-sm"
-                    />
+                    {hsTariff1}
                   </td>
                   <td className="border border-black p-1">
                     <AdjustedInput
