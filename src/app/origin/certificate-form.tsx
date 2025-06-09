@@ -125,7 +125,7 @@ export default function CertificateForm(invoice: Invoice) {
   const [importerTaxId, setImporterTaxId] = useState("")
 
   // Section 6-9 - Goods Table
-  const [hsTariff1] = useState("9018.9080 - gripping device used for medical science")
+  // const [hsTariff1] = useState("9018.9080 - gripping device used for medical science")
   const [originCriterion1, setOriginCriterion1] = useState("C")
   const [countryOrigin1, setCountryOrigin1] = useState("Canada")
 
@@ -140,13 +140,6 @@ export default function CertificateForm(invoice: Invoice) {
   const handleChangeProducer = (tax: string) => {
     const targetDataset = ProducerDetails.find((p) => p.taxIdNumber.toLocaleLowerCase() === tax.toLocaleLowerCase());
     if (targetDataset) {
-     /*  setProducerCompanyName(targetDataset.companyName);
-      setProducerAddress(targetDataset.address);
-      setProducerName(targetDataset.importerName);
-      setProducerTelephone(targetDataset.contactNumber);
-      setProducerEmail(targetDataset.email);
-      setProducerTaxId(targetDataset.taxIdNumber); */
-
       setImporterCompanyName(targetDataset.companyName);
       setImporterName(targetDataset.importerName);
       setImporterAddress(targetDataset.address);
@@ -273,7 +266,7 @@ export default function CertificateForm(invoice: Invoice) {
 
             {/* Section 3 - Exporter Details */}
             <div className="border p-3">
-              <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1" style={{backgroundColor: "#92d050"}}>3. EXPORTER&apos;S DETAILS <small>(If different than the certifier)</small></h3>
+              <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1" style={{backgroundColor: "#92d050"}}>3. EXPORTER&apos;S DETAILS <p className="text-xs inline">(If different than the certifier)</p></h3>
               <div className="space-y-2">
                 <Ndiv>
                   <label className="text-sm font-medium">Company Name:</label>
@@ -405,7 +398,7 @@ export default function CertificateForm(invoice: Invoice) {
 
           {/* Section 5 - Importer Details */}
           <div className="border border-black p-3 mb-4">
-            <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1 h-8" style={{backgroundColor: "#92d050"}}>5. IMPORTER&apos;S DETAILS (If different than the certifier)</h3>
+            <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1 h-8" style={{backgroundColor: "#92d050"}}>5. IMPORTER&apos;S DETAILS <p className="text-xs inline">(If different than the certifier)</p></h3>
             <div className="flex items-center gap-6 mb-3 bg-[var(--origin-green)] h-20 justify-center" style={{backgroundColor: "#92d050"}}>
               <div className="flex items-center gap-2">
                 <Checkbox checked={unknown} onChange={(checked) => setUnknown(checked.target.checked)} />
@@ -503,22 +496,14 @@ export default function CertificateForm(invoice: Invoice) {
             const productCode = getProductCodeFromDesc(itemDescription?.toLocaleLowerCase() ?? "");           
                 return <tr key={idx} className="border border-black" onClick={() => setInvoiceLine((pv) => [...pv.filter((lineItem) => lineItem.Id !== item.Id)])}>
                   <td className="border p-1 text-sm">
-                      {/* <AdjustedInput
-                        value={productCode}
-                        className="border-0 rounded-none px-1 py-0 h-6 text-sm mb-1"
-                      /> */}
                       {productCode}
                       </td>
                       <td className="text-sm">
-                      {/* <AdjustedInput
-                        value={itemDescription}
-                        // onChange={(e) => setDescription1(e.target.value)}
-                        className="border-0 rounded-none px-1 py-0 h-6 text-sm"
-                      /> */}
                       {itemDescription}
                   </td>
-                  <td className="border border-black p-1">
-                    {hsTariff1}
+                  <td className="border border-black p-1 text-xs">
+                    {/* {hsTariff1} */}
+                    9018.9080 - <br/>gripping device used for medical science
                   </td>
                   <td className="border border-black p-1">
                     <AdjustedInput
@@ -601,34 +586,6 @@ export default function CertificateForm(invoice: Invoice) {
       <div className="mt-8 flex gap-4 no-print">
         <Button onClick={() => window.print()} className="bg-blue-600 hover:bg-blue-700">
           Print Form
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={() => {
-            // Reset form logic could go here
-            console.log("Form data:", {
-              certifierType,
-              certifierDetails: {
-                certifierCompanyName,
-                certifierNameJobTitle,
-                certifierAddress,
-                certifierTelephone,
-                certifierEmail,
-                certifierTaxId,
-              },
-              exporterDetails: {
-                exporterCompanyName,
-                exporterNameJobTitle,
-                exporterAddress,
-                exporterTelephone,
-                exporterEmail,
-                exporterTaxId,
-              },
-              // ... other form data
-            })
-          }}
-        >
-          Save Data
         </Button>
       </div>
     </Container>
