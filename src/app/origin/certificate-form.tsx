@@ -46,23 +46,23 @@ const AdjustedInput = styled(Input)`
 `;
 const Ndiv = styled.div`
   display: flex;
-  padding: 2px 8px;
+  padding: 0px 8px;
   justify-content: flex-start;
   align-items: center;
   label {
     display: inline;
     flex: 0 0 auto;
-    line-height: 13px;
-  font-size: 13px;
+    line-height: 12px;
+  font-size: 12px;
   }
   .ant-select{
     flex: 1;
   }
   .ant-input {
-  font-size: 13px;
+  font-size: 12px;
     display: inline;
     padding: 0 8px;
-    line-height: 13px;
+    line-height: 12px;
     flex: 1;
     // width: fit-content;
   }
@@ -125,7 +125,7 @@ export default function CertificateForm(invoice: Invoice) {
   const [importerTaxId, setImporterTaxId] = useState("")
 
   // Section 6-9 - Goods Table
-  const [hsTariff1] = useState("9018.9080")
+  const [hsTariff1] = useState("9018.9080 - gripping device used for medical science")
   const [originCriterion1, setOriginCriterion1] = useState("C")
   const [countryOrigin1, setCountryOrigin1] = useState("Canada")
 
@@ -405,7 +405,7 @@ export default function CertificateForm(invoice: Invoice) {
 
           {/* Section 5 - Importer Details */}
           <div className="border border-black p-3 mb-4">
-            <h3 className="font-bold mb-3 bg-[var(--origin-green)] h-8" style={{backgroundColor: "#92d050"}}>5. IMPORTER&apos;S DETAILS (If different than the certifier)</h3>
+            <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1 h-8" style={{backgroundColor: "#92d050"}}>5. IMPORTER&apos;S DETAILS (If different than the certifier)</h3>
             <div className="flex items-center gap-6 mb-3 bg-[var(--origin-green)] h-20 justify-center" style={{backgroundColor: "#92d050"}}>
               <div className="flex items-center gap-2">
                 <Checkbox checked={unknown} onChange={(checked) => setUnknown(checked.target.checked)} />

@@ -284,7 +284,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
                 {Object.entries(invoice?.BillAddr ?? {}).map(([a, b], index) => (<Option key={`${a}${index}`}>{b}</Option>))}                
               </ExtendedSelect>
               </td>
-            <td>9018.9080</td>
+            <td>9018.9080 - gripping device used for medical science</td>
           </tr>
         </tbody>
       </InvoiceTable>

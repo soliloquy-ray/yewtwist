@@ -315,7 +315,7 @@ export default function InvoiceView() {
               </ExtendedSelect>
             </td></tr>
           <tr>
-            <td style={{textAlign: "center", fontWeight: 800}} colSpan={5} >Tariff Classification: 9018.9080</td>
+            <td style={{textAlign: "center", fontWeight: 800}} colSpan={5} >Tariff Classification: 9018.9080 - gripping device used for medical science</td>
           </tr>
         </tbody>
       </InvoiceTable>
