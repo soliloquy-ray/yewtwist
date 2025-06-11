@@ -510,7 +510,7 @@ export default function CertificateForm(invoice: Invoice) {
                   </td>
                   <td className="border border-black p-1 text-xs">
                     {/* {hsTariff1} */}
-                    9018.9080 - <br/>gripping device used for medical science
+                    9018.9080 - <br/>gripping device used for medical sciences
                   </td>
                   <td className="border border-black p-1">
                     <AdjustedInput
