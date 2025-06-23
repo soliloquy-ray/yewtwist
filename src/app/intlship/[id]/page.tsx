@@ -286,7 +286,7 @@ export default function InvoiceView() {
               <td style={{textAlign: "center"}}>{
                   productCode
               }</td>
-              <td style={{textAlign: "center"}}>{itemDescription}<br/><br/>(item is categorized as a non-medical device. It is a gripping device used in medical sciences.)</td>
+              <td style={{textAlign: "center"}}>{itemDescription}<br/><br/>(Item is categorized as a non-medical device. It is a gripping device used in medical sciences.)</td>
               <td style={{textAlign: "center"}}>{itemDescription?.toLocaleLowerCase().includes("orange") ? "240704" : "240203"}</td>              
               <td style={{textAlign: "center"}}>{ productCode.toLocaleLowerCase().includes("yt1") ? 'Bag' : 'Box' }</td>
               <td style={{textAlign: "center"}}>{actualQty}</td>
