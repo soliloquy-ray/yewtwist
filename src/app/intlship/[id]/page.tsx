@@ -286,7 +286,7 @@ export default function InvoiceView() {
               <td style={{textAlign: "center"}}>{
                   productCode
               }</td>
-              <td style={{textAlign: "center"}}>{itemDescription}</td>
+              <td style={{textAlign: "center"}}>{itemDescription}<br/>(gripping device used for medical sciences)</td>
               <td style={{textAlign: "center"}}>{itemDescription?.toLocaleLowerCase().includes("orange") ? "240704" : "240203"}</td>              
               <td style={{textAlign: "center"}}>{ productCode.toLocaleLowerCase().includes("yt1") ? 'Bag' : 'Box' }</td>
               <td style={{textAlign: "center"}}>{actualQty}</td>
@@ -315,7 +315,7 @@ export default function InvoiceView() {
               </ExtendedSelect>
             </td></tr>
           <tr>
-            <td style={{textAlign: "center", fontWeight: 800}} colSpan={5} >Tariff Classification: 9018.9080 - gripping device used for medical sciences</td>
+            <td style={{textAlign: "center", fontWeight: 800}} colSpan={5} >Tariff Classification: 9018.9080</td>
           </tr>
         </tbody>
       </InvoiceTable>

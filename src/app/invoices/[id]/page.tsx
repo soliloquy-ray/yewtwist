@@ -284,7 +284,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
                 {Object.entries(invoice?.BillAddr ?? {}).map(([a, b], index) => (<Option key={`${a}${index}`}>{b}</Option>))}                
               </ExtendedSelect>
               </td>
-            <td>9018.9080 - gripping device used for medical sciences</td>
+            <td>9018.9080</td>
           </tr>
         </tbody>
       </InvoiceTable>
@@ -344,7 +344,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
               }</td>
                 <td style={{textAlign: "center"}}>{actualPkg}</td>
                 <td>{getPackagingFromDesc(itemDescription?.toLocaleLowerCase() ?? "")}</td>
-                <td>{itemDescription === 'Discounts given' ? 'Discount' : itemDescription}</td>
+                <td>{itemDescription === 'Discounts given' ? 'Discount' : itemDescription}<br/>(gripping device used for medical sciences)</td>
                 <td style={{textAlign: "center"}}>{itemDescription?.toLocaleLowerCase().includes("orange") ? "240704" : "240203"}</td>
                 <td style={{textAlign: "center"}}>{actualQty}</td>
                 <td style={{textAlign: "center"}}>{ item.DetailType === 'DiscountLineDetail' ? 'Percent' : 'Unit' }</td>
@@ -353,6 +353,9 @@ Centimeters: 11.5 x 1.5 x 17</p>;
                 <td style={{textAlign: "right"}}>${Number(actualAmount.toFixed(2)).toLocaleString()}</td>
               </tr>
           })}
+          <tr>
+            <th colSpan={10} style={{textAlign: "center"}}>Gripping Device- non medical device</th>
+          </tr>
           <tr>
             <th>Total Packages</th>
             <th style={{textAlign: "center"}}>{getFilteredLineItems(invoiceLine).reduce((acc, item) => {
@@ -369,9 +372,6 @@ Centimeters: 11.5 x 1.5 x 17</p>;
               return acc + Number(actualQty ?? 0);
               }, 0) : Number(invoiceLine
             ?.filter(item => ['SalesItemLineDetail','GroupLineDetail','DiscountLineDetail'].includes(item.DetailType) /* && item?.SalesItemLineDetail?.ItemRef.value !== "SHIPPING_ITEM_ID" */ && !item.SalesItemLineDetail?.ItemRef?.name?.includes('Stripe') && !item.GroupLineDetail?.GroupItemRef?.name.includes('Stripe')).reduce((acc, sum) => acc + sum.Amount, 0).toFixed(2)).toLocaleString()}</th>
-          </tr>
-          <tr>
-            <th colSpan={10} style={{textAlign: "center"}}>Gripping Device- non medical device</th>
           </tr>
         </tbody>
       </InvoiceTable>
