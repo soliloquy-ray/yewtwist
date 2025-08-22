@@ -344,7 +344,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
               }</td>
                 <td style={{textAlign: "center"}}>{actualPkg}</td>
                 <td>{getPackagingFromDesc(itemDescription?.toLocaleLowerCase() ?? "")}</td>
-                <td>{itemDescription === 'Discounts given' ? 'Discount' : itemDescription}<br/><br/>(Item is categorized as a non-medical device. It is a gripping device used in medical sciences.)</td>
+                <td>{itemDescription === 'Discounts given' ? 'Discount' : itemDescription}<br/><br/>(Item is <b>NOT a medical device</b>. It is a gripping device used in medical sciences.)</td>
                 <td style={{textAlign: "center"}}>{itemDescription?.toLocaleLowerCase().includes("orange") ? "240704" : "240203"}</td>
                 <td style={{textAlign: "center"}}>{actualQty}</td>
                 <td style={{textAlign: "center"}}>{ item.DetailType === 'DiscountLineDetail' ? 'Percent' : 'Unit' }</td>

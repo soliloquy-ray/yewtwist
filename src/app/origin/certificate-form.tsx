@@ -573,7 +573,7 @@ export default function CertificateForm(invoice: Invoice) {
             </div>
 
             <div className="flex items-center gap-8 mt-8">
-              <div className="flex-1">
+              <div className="flex-1 pb-1">
                 <label className="text-sm font-bold">CERTIFIER&apos;S SIGNATURE</label>
                 <div className="border-b border-gray-400 h-10 mt-2"><Image src="/mariasig.png" alt="maria sig" height={40} style={{objectFit: "contain"}} /></div>
               </div>
