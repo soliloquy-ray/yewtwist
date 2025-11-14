@@ -42,6 +42,13 @@ const ProducerDetails: ProducerDetails[] = [{
   contactNumber: "1-888-986-2485",
   email: "us-customercare@chsltd.com",
   taxIdNumber: "26-0420039"
+},{
+  companyName: "Medical Marketing Inc",
+  importerName: "Andy Wright",
+  address: "10821 Williamson Lane-Unit E1 Cockeysville, MD 2103",
+  contactNumber: "800-452-9998",
+  email: "a.wrightmmi@gmail.com",
+  taxIdNumber: "02554329"
 }
 ]
 
