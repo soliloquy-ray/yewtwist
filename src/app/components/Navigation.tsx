@@ -5,7 +5,8 @@ import {
   FileTextOutlined, 
   ShoppingOutlined,
   SyncOutlined, 
-  FileTextTwoTone
+  FileTextTwoTone,
+  SearchOutlined
 } from '@ant-design/icons';
 import { useRouter, usePathname } from 'next/navigation';
 import styled from 'styled-components';
@@ -52,6 +53,11 @@ const Navigation = () => {
       key: '/sync',
       icon: <SyncOutlined />,
       label: 'Sync Data',
+    },
+    {
+      key: '/state-finder',
+      icon: <SearchOutlined />,
+      label: 'State Finder'
     }
   ];
 

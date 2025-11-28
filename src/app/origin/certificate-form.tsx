@@ -57,12 +57,15 @@ const AdjustedInput = styled(Input)`
   width: fit-content;
   background: transparent;
   z-index: 0;
+  height: 20px;
+  font-size: 11px;
 `;
 const Ndiv = styled.div`
   display: flex;
   padding: 0px 8px;
   justify-content: flex-start;
   align-items: center;
+  height: 20px;
   label {
     display: inline;
     flex: 0 0 auto;
@@ -87,6 +90,7 @@ display: block;
 
     @media print {
       -webkit-print-color-adjust: exact;
+      padding: 4px;
       .no-print {
         display: none;
       }
@@ -280,7 +284,7 @@ export default function CertificateForm(invoice: Invoice) {
 
             {/* Section 3 - Exporter Details */}
             <div className="border p-3">
-              <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1" style={{backgroundColor: "#92d050"}}>3. EXPORTER&apos;S DETAILS <p className="text-xs inline">(If different than the certifier)</p></h3>
+              <h3 className="font-bold mb-3 bg-[var(--origin-green)] !pt-1 !pb-2 !px-1" style={{backgroundColor: "#92d050"}}>3. EXPORTER&apos;S DETAILS <p className="text-[10px] inline nowrap">(If different than the certifier)</p></h3>
               <div className="space-y-2">
                 <Ndiv>
                   <label className="text-sm font-medium">Company Name:</label>
@@ -354,7 +358,7 @@ export default function CertificateForm(invoice: Invoice) {
                 <span className="text-xs">Available upon request by <br/> the importing authorities</span>
               </div>
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col">
               {/* <div className="space-y-2"> */}
                 <Ndiv>
                   <label className="text-sm font-medium">Company Name:</label>
@@ -426,7 +430,7 @@ export default function CertificateForm(invoice: Invoice) {
                 <span className="text-xs">Various Importers</span>
               </div>
             </div>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col">
               {/* <div className="space-y-2"> */}
                 <Ndiv>
                   <label className="text-sm font-medium">Company Name:</label>
@@ -486,17 +490,19 @@ export default function CertificateForm(invoice: Invoice) {
 
           {/* Sections 6-9 - Goods Table */}
           <div className="border border-black mb-4">
-            <table className="w-full" style={{tableLayout: "fixed"}}>
+            <table className="w-full" >
               <thead>
                 <tr className="border-b border-black bg-[var(--origin-green)]" style={{backgroundColor: "#92d050"}}>
                   <th className="border-r border-black p-2 text-left text-sm font-bold" colSpan={2}>6. DESCRIPTION OF THE GOOD</th>
-                  <th className="border-r border-black p-2 text-left text-sm font-bold">7. HS TARIFF CLASSIFICATION</th>
+                  <th className="border-r border-black p-2 text-left text-sm font-bold" colSpan={3}>7. HS TARIFF CLASSIFICATION</th>
                   <th className="border-r border-black p-2 text-left text-sm font-bold">8. ORIGIN CRITERION</th>
                   <th className="p-2 text-left text-sm font-bold">9. COUNTRY OF ORIGIN</th>
                 </tr>
                 <tr className="border-b border-black bg-[var(--origin-green)]" style={{backgroundColor: "#92d050"}}>
-                  <th className="border-r border-black p-2 text-left text-xs">PART / SKU NUMBER</th>
+                  <th className="border-r border-black p-2 text-left text-xs" style={{ width: "20%"}}>PART / SKU NUMBER</th>
                   <th className="border-r border-black p-2 text-left text-xs">DESCRIPTION</th>
+                  <th />
+                  <th />
                   <th />
                   <th className="border-r border-black p-2 text-left text-xs"></th>
                   <th className="p-2 text-left text-xs"></th>
@@ -508,29 +514,29 @@ export default function CertificateForm(invoice: Invoice) {
             item.DetailType === 'DiscountLineDetail' ? item?.DiscountLineDetail?.DiscountAccountRef?.name : 
           item.SalesItemLineDetail?.ItemRef.name;
             const productCode = getProductCodeFromDesc(itemDescription?.toLocaleLowerCase() ?? "");           
-                return <tr key={idx} className="border border-black" onClick={() => setInvoiceLine((pv) => [...pv.filter((lineItem) => lineItem.Id !== item.Id)])}>
-                  <td className="border p-1 text-xs">
+                return <tr key={idx} className="border border-black">
+                  <td className="border p-1! text-xs" onClick={() => setInvoiceLine((pv) => [...pv.filter((lineItem) => lineItem.Id !== item.Id)])}>
                       {productCode}
                       </td>
-                      <td className="text-xs">
+                  <td className="text-xs p-1!">
                       {itemDescription}
                   </td>
-                  <td className="border border-black p-1 text-xs">
+                  <td className="border border-black p-1! text-xs" colSpan={3}>
                     {/* {hsTariff1} */}
                     9018.9080 - <br/>gripping device used for medical sciences
                   </td>
-                  <td className="border border-black p-1">
+                  <td className="border border-black p-1!">
                     <AdjustedInput
                       value={originCriterion1}
                       onChange={(e) => setOriginCriterion1(e.target.value)}
-                      className="border-0 rounded-none px-1 py-0 h-6 text-xs"
+                      className="border-0 rounded-none  py-0 h-6 text-xs"
                     />
                   </td>
-                  <td className="p-1">
+                  <td className="p-1!">
                     <AdjustedInput
                       value={countryOrigin1}
                       onChange={(e) => setCountryOrigin1(e.target.value)}
-                      className="border-0 rounded-none px-1 py-0 h-6 text-xs"
+                      className="border-0 rounded-none py-0 h-6 text-xs"
                     />
                   </td>
                 </tr>})}
@@ -579,19 +585,20 @@ export default function CertificateForm(invoice: Invoice) {
               />
             </div>
 
-            <div className="flex items-center gap-8 mt-8">
-              <div className="flex-1 pb-1">
+            <div className="flex items-center gap-8 mt-8 pb-2">
+              <div className="flex-1 pb-2!">
                 <label className="text-sm font-bold">CERTIFIER&apos;S SIGNATURE</label>
                 <div className="border-b border-gray-400 h-10 mt-2"><Image src="/mariasig.png" alt="maria sig" height={40} style={{objectFit: "contain"}} /></div>
               </div>
-              <div className="w-32">
+              <div className="flex-1  pb-1!">
                 <label className="text-sm font-bold">DATE</label>
-                <AdjustedInput
+                <div className="border-b border-gray-400 h-10 mt-2"><AdjustedInput
                   value={signatureDate}
                   onChange={(e) => setSignatureDate(e.target.value)}
-                  className="border-0 border-b border-gray-400 rounded-none px-1 py-0 h-6 text-sm mt-2"
-                />
+                  className="px-1 py-0 h-6 text-sm mt-2"
+                /></div>
               </div>
+                <br/>
             </div>
           </div>
         </div>

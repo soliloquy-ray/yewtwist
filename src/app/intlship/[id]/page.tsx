@@ -29,7 +29,7 @@ const PrintableContainer = styled.div`
   }
 
   @media print {
-    padding: 0;
+    padding: 4px;
     .no-print {
       display: none;
     }
@@ -39,7 +39,7 @@ const PrintableContainer = styled.div`
 const InvoiceTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 
   th, td {
     border: 1px solid #000;
@@ -196,13 +196,13 @@ export default function InvoiceView() {
           <tr style={{display: "flex"}}>
             <td style={{flex: 1}} colSpan={2}>
               <ExtendedInput value={fourValue} onChange={(v) => setFourValue(v.target.value)} style={{fontSize: 10, padding: 0, border: fourValue === "" ? "1px solid red" : ""}} bordered={false} />
-              {Object.values(invoice?.BillAddr ?? {}).filter((bData) => bData !== "").map((billData, index) => <p key={index}>{billData}</p>)}
-              {invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue}
+              {Object.values(invoice?.BillAddr ?? {}).filter((bData) => bData !== "").join(", ")/* map((billData, index) => <p key={index}>{billData}</p>) */}
+              <p>{invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue}</p>
             </td>
             <td style={{flex: 1}} colSpan={2}>
               <ExtendedInput value={nineValue} onChange={(v: any) => setNineValue(v.target.value)} style={{fontSize: 10, padding: 0,border: nineValue === "" ? "1px solid red" : ""}} bordered={false} />
-              {Object.values(invoice?.ShipAddr ?? {}).filter((sData) => sData !== "").map((shipData, index) => <p key={index}>{shipData}</p>)}
-              {invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue}
+              {Object.values(invoice?.ShipAddr ?? {}).filter((sData) => sData !== "").join(", ")/* map((shipData, index) => <p key={index}>{shipData}</p>) */}
+              <p>{invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue}</p>
             </td>
           </tr>
         </tbody>
@@ -264,11 +264,11 @@ export default function InvoiceView() {
       <InvoiceTable style={{tableLayout: "fixed"}}>
         <tbody>
           <tr>
-            <th colSpan={5}>11. Shipment Order Details:</th>
+            <th colSpan={7}>11. Shipment Order Details:</th>
           </tr>
           <tr>
             <th className='lighter' style={{textAlign: "center"}}>Product Code</th>
-            <th className='lighter' style={{textAlign: "center"}}>Goods Description</th>
+            <th className='lighter' style={{textAlign: "center"}} colSpan={3}>Goods Description</th>
             <th className='lighter' style={{textAlign: "center"}}>Lot Number</th>
             <th className='lighter' style={{textAlign: "center"}}>Unit of Measure</th>
             <th className='lighter' style={{textAlign: "center"}}>Qty</th>            
@@ -286,7 +286,7 @@ export default function InvoiceView() {
               <td style={{textAlign: "center"}}>{
                   productCode
               }</td>
-              <td style={{textAlign: "center"}}>{itemDescription}<br/><br/>(Item is <b>NOT a medical device</b>. It is a gripping device used in medical sciences.)</td>
+              <td style={{textAlign: "center"}} colSpan={3}><p>{itemDescription}</p>(Item is <b>NOT a medical device</b>. It is a gripping device used in medical sciences.)</td>
               <td style={{textAlign: "center"}}>{itemDescription?.toLocaleLowerCase().includes("orange") ? "240704" : "240203"}</td>              
               <td style={{textAlign: "center"}}>{ productCode.toLocaleLowerCase().includes("yt1") ? 'Bag' : 'Box' }</td>
               <td style={{textAlign: "center"}}>{actualQty}</td>
@@ -299,6 +299,8 @@ export default function InvoiceView() {
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
+            <td></td>
           </tr>
           <tr>
             <td></td>
@@ -306,8 +308,10 @@ export default function InvoiceView() {
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
+            <td></td>
           </tr>
-          <tr><td style={{fontWeight: 800}} colSpan={5}>
+          <tr><td style={{fontWeight: 800}} colSpan={7}>
             
           <ExtendedSelect className='centered' bordered={false} value={twelveValue} onChange={(v: any) => setTwelveValue(v)} style={{width: "100%", border: twelveValue === "" ? "1px solid red" : ""}} allowClear>
                 <Option value={1}>Product Sample Not For Sale</Option>
@@ -315,7 +319,7 @@ export default function InvoiceView() {
               </ExtendedSelect>
             </td></tr>
           <tr>
-            <td style={{textAlign: "center", fontWeight: 800}} colSpan={5} >Tariff Classification: 9018.9080</td>
+            <td style={{textAlign: "center", fontWeight: 800}} colSpan={7} >Tariff Classification: 9018.9080</td>
           </tr>
         </tbody>
       </InvoiceTable>
@@ -334,7 +338,7 @@ export default function InvoiceView() {
             </td>
             <td>
               <Row><b>Carrier Account No: </b></Row>
-              <Row><ExtendedInput bordered={false}/></Row>
+              <Row><ExtendedInput bordered={false} defaultValue={"J0699K"}/></Row>
             </td>
           </tr>
         </tbody>

@@ -24,7 +24,7 @@ const PrintableContainer = styled.div`
   }
 
   @media print {
-    padding: 0;
+    padding: 4px;
     .no-print {
       display: none;
     }
@@ -38,13 +38,17 @@ const ExtendedRow = styled(Row)`
 const InvoiceTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   
   th, td {
     border: 1px solid #000;
     padding: 8px;
     text-align: left;
     font-size: 10px;
+  }
+
+  td.noPad {
+    padding: 8px 2px;
   }
   
   th {
@@ -80,6 +84,24 @@ padding: 0 !important;
 .ant-select-selection-item{
   font-size: 10px;
 padding: 0;
+}
+`;
+
+const Inputr = styled(Input)`
+font-size: 10px;
+width: 50px;
+`
+
+const ExtendedSelectr = styled(Select)`
+height: fit-content;
+font-size: 10px;
+min-width: 100px;
+.ant-select-selection-item{
+  font-size: 10px;
+padding: 0;
+}
+.ant-select-selector {
+padding: 0 !important;
 }
 `;
 
@@ -137,7 +159,7 @@ export default function InvoiceView() {
     return `${type} - ${color}`;
   }
 
-  const getPackagingFromDesc = (desc: string): JSX.Element => {
+  /* const getPackagingFromDesc = (desc: string): JSX.Element => {
     if (desc.includes("master box")) {
       if (desc.includes("orange")) return <p>Approx. Dimensions of package L x W x H<br/>
 Inches: 13-5/8 x  9-1/8 x 20-1/2 <br/>
@@ -160,6 +182,35 @@ Centimeters: 11.5 x 1.5 x 17</p>;
 Inches: 5.2 x 0.5 x 7.5 <br/>
 Centimeters: 11.5 x 1.5 x 17</p>;
     } 
+  } */
+
+  const getPackagingTypes = (): JSX.Element[] => {
+    return [
+      <div className='flex flex-col p-0!' key={1}>
+        <span className="h-5 text-[10px]/4">Approx. Dimensions of package L x W x H</span>
+        <span className="h-5 text-[10px]/4">Inches: 13-5/8 x  9-1/8 x 20-1/2 </span>
+        <span className="h-5 text-[10px]/4">Centimeters: 34 x 23.5 x 52</span></div>,
+      <div className='flex flex-col p-0!' key={2}>
+        <span className="h-5 text-[10px]/4">Approx. Dimensions of package L x W x H</span>
+        <span className="h-5 text-[10px]/4">Inches: 13-5/8 x  9-1/8 x 20-1/2</span>
+        <span className="h-5 text-[10px]/4">Centimeters: 34 x 23.5 x 52</span></div>,
+      <div className='flex flex-col p-0!' key={3}>
+        <span className="h-5 text-[10px]/4">Approx. Dimensions of package L x W x H</span>
+        <span className="h-5 text-[10px]/4">Inches: 8.86 x 6.69 x 3.94</span>
+        <span className="h-5 text-[10px]/4">Centimeters: 22.5 x 17 x 10</span></div>,
+      <div className='flex flex-col p-0!' key={4}>
+        <span className="h-5 text-[10px]/4">Approx. Dimensions of package L x W x H</span>
+        <span className="h-5 text-[10px]/4">Inches: 8.86 x 6.69 x 3.94</span>
+        <span className="h-5 text-[10px]/4">Centimeters: 22.5 x 17 x 10</span></div>,
+        <div className='flex flex-col p-0!' key={5}>
+        <span className="h-5 text-[10px]/4">Approx. Dimensions of package L x W x H</span>
+        <span className="h-5 text-[10px]/4">Inches: 5.2 x 0.5 x 7.5</span>
+        <span className="h-5 text-[10px]/4">Centimeters: 11.5 x 1.5 x 17</span></div>,
+        <div className='flex flex-col p-0!' key={6}>
+          <span className="h-5 text-[10px]/4">Approx. Dimensions of package L x W x H</span>
+          <span className="h-5 text-[10px]/4">Inches: 5.2 x 0.5 x 7.5 </span>
+          <span className="h-5 text-[10px]/4">Centimeters: 11.5 x 1.5 x 17</span></div>
+    ]
   }
 
   const getWeightFromLine = (item: string, actualPkg: number, actualQty: number ): number => {
@@ -242,15 +293,12 @@ Centimeters: 11.5 x 1.5 x 17</p>;
           </tr>
           <tr style={{display: "flex"}}>
             <td style={{flex: 1}} colSpan={2}>
-              Ingenyewity Inc<br />
-              15 Allstate Parkway, Suite 600<br />
-              L3R 5B4 Markham, Ontario<br />
-              Canada
+              Ingenyewity Inc, 15 Allstate Parkway, Suite 600, L3R 5B4 Markham, Ontario, Canada
             </td>
             <td style={{flex: 1}} colSpan={2}>
               <ExtendedInput value={fourValue} onChange={(v) => setFourValue(v.target.value)} style={{fontSize: 10, padding: 0, border: fourValue === "" ? "1px solid red" : ""}} bordered={false} />
-              {Object.values(invoice?.BillAddr ?? {}).filter((bData) => bData !== "").map((billData, index) => <p key={index}>{billData}</p>)}
-              {invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue} 
+              {Object.values(invoice?.BillAddr ?? {}).filter((bData) => bData !== "").join(", ")/* map((billData, index) => <span key={index}>{billData}</span>) */}
+              <p>{invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue} </p>
             </td>
           </tr>
         </tbody>
@@ -270,7 +318,7 @@ Centimeters: 11.5 x 1.5 x 17</p>;
             <td>Canada</td>
             <td colSpan={2} rowSpan={3}>
               <ExtendedInput value={nineValue} onChange={(v: any) => setNineValue(v.target.value)} style={{fontSize: 10, padding: 0,border: nineValue === "" ? "1px solid red" : ""}} bordered={false} />
-              {Object.values(invoice?.ShipAddr ?? {}).filter((sData) => sData !== "").map((shipData, index) => <p key={index}>{shipData}</p>)}
+              {Object.values(invoice?.ShipAddr ?? {}).filter((sData) => sData !== "").join(", ")/*map((shipData, index) => <p key={index}>{shipData}</p>)*/}
               {invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue}     
              </td>
           </tr>
@@ -338,17 +386,22 @@ Centimeters: 11.5 x 1.5 x 17</p>;
             const actualPrice = Number(twelveValue) === 1 ? 3.5 : item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.UnitPrice ?? item.SalesItemLineDetail?.UnitPrice;
             const actualAmount = Number(twelveValue) === 1 ? Number(actualPrice) * Number(actualQty) : item.Amount;
             const actualWeight = getWeightFromLine(itemDescription?.toLocaleLowerCase() ?? "", actualPkg!, actualQty!);
-              return <tr key={index} style={{cursor: 'pointer'}} onClick={() => setInvoiceLine((pv) => [...pv.filter((lineItem) => lineItem.Id !== item.Id)])}>
-                <td>{
+              return <tr key={index} style={{cursor: 'pointer'}}>
+                <td onClick={() => setInvoiceLine((pv) => [...pv.filter((lineItem) => lineItem.Id !== item.Id)])}>{
                   getProductCodeFromDesc(itemDescription?.toLocaleLowerCase() ?? "")
               }</td>
-                <td style={{textAlign: "center"}}>{actualPkg}</td>
-                <td>{getPackagingFromDesc(itemDescription?.toLocaleLowerCase() ?? "")}</td>
+                <td style={{textAlign: "center"}} className='noPad'>{actualPkg}</td>
+                {/* <td>{getPackagingFromDesc(itemDescription?.toLocaleLowerCase() ?? "")}</td> */}
+                <td className='noPad'><ExtendedSelectr bordered={false}>
+                  {
+                    getPackagingTypes().map((t, i) => <Option value={i} key={i}>{t}</Option>)
+                  }
+                  </ExtendedSelectr></td>
                 <td>{itemDescription === 'Discounts given' ? 'Discount' : itemDescription}<br/><br/>(Item is <b>NOT a medical device</b>. It is a gripping device used in medical sciences.)</td>
                 <td style={{textAlign: "center"}}>{itemDescription?.toLocaleLowerCase().includes("orange") ? "240704" : "240203"}</td>
                 <td style={{textAlign: "center"}}>{actualQty}</td>
                 <td style={{textAlign: "center"}}>{ item.DetailType === 'DiscountLineDetail' ? 'Percent' : 'Unit' }</td>
-                <td style={{textAlign: "center"}}>{ isNaN(actualWeight) ? "N/A" : actualWeight }</td>
+                <td style={{textAlign: "center"}}><Inputr defaultValue={ isNaN(actualWeight) ? "N/A" : actualWeight }/></td>
                 <td style={{textAlign: "right"}}>{isNaN(Number(actualPrice)) ? "N/A" : `$${Number(actualPrice?.toFixed(2)).toLocaleString()}`}</td>
                 <td style={{textAlign: "right"}}>${Number(actualAmount.toFixed(2)).toLocaleString()}</td>
               </tr>
@@ -386,13 +439,11 @@ Centimeters: 11.5 x 1.5 x 17</p>;
         VALUE FOR CUSTOMS PURPOSES ONLY
       </ExtendedRow>
       <br/>
-      <br/>
       
       <ExtendedRow style={{alignItems: "center", gap: 4}}>
         I DECLARE ALL THE INFORMATION CONTAINED IN THIS INVOICE TO BE TRUE AND CORRECT
       </ExtendedRow>
       <br/>
-      <br/>
       
       <ExtendedRow style={{alignItems: "center", gap: 4}}>
         SIGNATURE OF SHIPPER/EXPORTER (Type name and title and sign)
@@ -412,8 +463,6 @@ Centimeters: 11.5 x 1.5 x 17</p>;
         <b>________________________________________________________________________________________________</b><b style={{textDecoration: "underline"}}>{invoice?.ShipDate}</b>
       </ExtendedRow>
       <br/>
-      <br/>
-      
       <ExtendedRow style={{alignItems: "center", gap: 4}}>
         <b>Transport information</b>
       </ExtendedRow>
