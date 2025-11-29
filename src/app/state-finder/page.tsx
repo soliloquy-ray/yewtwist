@@ -31,15 +31,15 @@ export default function DistributorTablePage() {
     { field: "Country", filter: true, width: 100 },
     { field: "State Name", filter: true, headerName: "State/Province" },
     { field: "Hospital Count", filter: "agNumberColumnFilter", width: 130 },
-    { field: "Since", filter: true, },
+    // { field: "Since", filter: true, },
     { field: "Distributor Name", filter: true },
     { field: "Name", headerName: "Contact Name", filter: true },
-    { field: "Title", width: 120 },
+    // { field: "Title", width: 120 },
     { field: "Contact Number", width: 150 },
     { field: "Address", width: 220 },
     { field: "Email", width: 220 },
     { field: "Area Representative", filter: true },
-    { field: "Rep Area Scope", filter: true },
+    // { field: "Rep Area Scope", filter: true },
     { field: "Rep Status", filter: true, cellStyle: params => 
         params.value === 'Active' ? { color: 'green', fontWeight: 'bold' } : null 
     },
