@@ -6,7 +6,7 @@ import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
 // 2. Register the modules immediately
 ModuleRegistry.registerModules([AllCommunityModule]);
 import "ag-grid-community/styles/ag-theme-quartz.css"; // Theme
-import { ColDef, GridReadyEvent } from 'ag-grid-community';
+import { ColDef } from 'ag-grid-community';
 import distributorData from '../sources/stateFinder.json';
 import PageWithNav from '../components/PageWithNav';
 import styled from 'styled-components';
