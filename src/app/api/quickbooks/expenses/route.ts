@@ -38,7 +38,7 @@ export async function GET(request: Request) {
     // Execute query with pagination
     const [expenses, total] = await Promise.all([
       Expense.find(query)
-        .sort({ TxnDate: -1 })
+        .sort({ date: -1 })
         .skip((page - 1) * limit)
         .limit(limit),
       Expense.countDocuments(query)
