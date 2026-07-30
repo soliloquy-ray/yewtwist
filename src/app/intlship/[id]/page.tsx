@@ -217,7 +217,7 @@ export default function InvoiceView() {
             <td><b>Name: </b> {invoice.CustomerRef.name}</td>
             <td><b>Phone Number: </b> 
             {invoice?.CustomField?.find((cf) => cf.Name === "Contact Number")?.StringValue}</td>
-            <td><b>Email: </b> {invoice.BillEmail.Address}</td>
+            <td><b>Email: </b> {invoice.BillEmail?.Address ?? '-'}</td>
             <td style={{ display: "flex", gap: 10, alignItems: "center"}}><b style={{flex: 0}}>Source: </b><ExtendedSelect bordered={false} style={{flex: 1}}>
               <Option value="Phone">Phone</Option>
               <Option value="Email">Email</Option>

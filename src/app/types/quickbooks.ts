@@ -100,7 +100,7 @@ interface Invoice {
   CustomerMemo: {
     value: string;
   }
-  BillEmail: {
+  BillEmail?: {
     Address: string;
   }
   Others: {

@@ -233,7 +233,7 @@ export default function InvoiceDetailsPage() {
       key: 'ShippingFee',
       width: 100,
       render: (_, invoice) => {
-        return invoice.Line.filter((lineItem) => lineItem.SalesItemLineDetail?.ItemRef.value === 'SHIPPING_ITEM_ID')?.[0]?.Amount;
+        return invoice.Line.filter((lineItem) => lineItem.SalesItemLineDetail?.ItemRef?.value === 'SHIPPING_ITEM_ID')?.[0]?.Amount;
       }
     },
     {
@@ -266,8 +266,8 @@ export default function InvoiceDetailsPage() {
               .map((item, index) => (
                 <LineItem key={index}>
                   {item.DetailType === 'GroupLineDetail' ? <div>{item.GroupLineDetail?.GroupItemRef?.name}</div> :
-                   item.DetailType === 'DiscountLineDetail' ? <div>{item?.DiscountLineDetail?.DiscountAccountRef?.name}</div> : 
-                  <div>{item.SalesItemLineDetail?.ItemRef.name}</div>}
+                   item.DetailType === 'DiscountLineDetail' ? <div>{item.DiscountLineDetail?.DiscountAccountRef?.name}</div> :
+                  <div>{item.SalesItemLineDetail?.ItemRef?.name}</div>}
                   {item.DetailType === 'DiscountLineDetail' ? 
                   <div>Discount: {item?.Amount} at {item.DiscountLineDetail?.DiscountPercent}%</div>
                   :
@@ -317,9 +317,9 @@ export default function InvoiceDetailsPage() {
          <CheckoutButton items={invoice.Line
             .filter(item => ['SalesItemLineDetail', 'GroupLineDetail', 'DiscountLineDetail'].includes(item.DetailType))
             .map((item) => {
-              let productName = item.SalesItemLineDetail?.ItemRef.name;
+              let productName = item.SalesItemLineDetail?.ItemRef?.name;
               if (item.DetailType === 'GroupLineDetail') productName = item.GroupLineDetail?.GroupItemRef?.name;
-              if (item.DetailType === 'DiscountLineDetail') productName = item?.DiscountLineDetail?.DiscountAccountRef?.name;
+              if (item.DetailType === 'DiscountLineDetail') productName = item.DiscountLineDetail?.DiscountAccountRef?.name;
               const qty = item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.Qty ?? item.SalesItemLineDetail?.Qty;
               const price = item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.UnitPrice ?? item.SalesItemLineDetail?.UnitPrice;
               const currency = invoice.CurrencyRef.value;
@@ -330,15 +330,15 @@ export default function InvoiceDetailsPage() {
                 description: productName ?? "Shipping Fee",
                 quantity: qty ?? 1
               };
-            })} email={invoice?.BillEmail.Address ?? ""} invoiceId={invoice.DocNumber} chargeShipping={true} company={invoice.CustomerRef.name}/>
+            })} email={invoice.BillEmail?.Address ?? ""} invoiceId={invoice.DocNumber} chargeShipping={true} company={invoice.CustomerRef.name}/>
             
          <CheckoutButton items={invoice.Line
             .filter(item => ['SalesItemLineDetail', 'GroupLineDetail', 'DiscountLineDetail'].includes(item.DetailType))
-            .filter(item => item.SalesItemLineDetail?.ItemRef.value !== "SHIPPING_ITEM_ID")
+            .filter(item => item.SalesItemLineDetail?.ItemRef?.value !== "SHIPPING_ITEM_ID")
             .map((item) => {
-              let productName = item.SalesItemLineDetail?.ItemRef.name;
+              let productName = item.SalesItemLineDetail?.ItemRef?.name;
               if (item.DetailType === 'GroupLineDetail') productName = item.GroupLineDetail?.GroupItemRef?.name;
-              if (item.DetailType === 'DiscountLineDetail') productName = item?.DiscountLineDetail?.DiscountAccountRef?.name;
+              if (item.DetailType === 'DiscountLineDetail') productName = item.DiscountLineDetail?.DiscountAccountRef?.name;
               const qty = item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.Qty ?? item.SalesItemLineDetail?.Qty;
               const price = item.GroupLineDetail?.Line[0]?.SalesItemLineDetail?.UnitPrice ?? item.SalesItemLineDetail?.UnitPrice;
               const currency = invoice.CurrencyRef.value;
@@ -349,7 +349,7 @@ export default function InvoiceDetailsPage() {
                 description: productName ?? "shipping",
                 quantity: qty ?? 1
               };
-            })} email={invoice?.BillEmail.Address ?? ""} invoiceId={invoice.DocNumber} chargeShipping={false} company={invoice.CustomerRef.name}/>
+            })} email={invoice.BillEmail?.Address ?? ""} invoiceId={invoice.DocNumber} chargeShipping={false} company={invoice.CustomerRef.name}/>
          </>
       ),
     }
